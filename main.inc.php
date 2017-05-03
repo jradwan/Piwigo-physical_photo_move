@@ -12,16 +12,19 @@ if (!defined('PHPWG_ROOT_PATH'))
 {
   die('Hacking attempt!');
 }
-add_event_handler('tabsheet_before_select','ppm_add_tab', 50, 2);
-function ppm_add_tab($sheets, $id)
+
+define('PHYS_PHOTO_MOVE_PATH', PHPWG_PLUGINS_PATH.basename(dirname(__FILE__)).'/');
+
+add_event_handler('tabsheet_before_select','phys_photo_move_add_tab', 50, 2);
+function phys_photo_move_add_tab($sheets, $id)
 {  
   load_language('plugin.lang', PHPWG_PLUGINS_PATH.basename(dirname(__FILE__)).'/');
   
   if ($id == 'photo')
   {
     $sheets['update'] = array(
-      'caption' => l10n('Move'),
-      'url' => get_root_url().'admin.php?page=plugin-ppm-'.$_GET['image_id'],
+      'caption' => l10n('Move Photo'),
+      'url' => get_root_url().'admin.php?page=plugin-phys-photo-move-'.$_GET['image_id'],
       );
   }
   
