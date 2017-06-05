@@ -10,13 +10,16 @@
       <td style="vertical-align:top">
         <form id="ppmove" method="post" action="" enctype="multipart/form-data">
           <p style="text-align:left; margin-top:0;">
-            <strong>Current file location:</strong> {$current_path}<br>
-            <strong>Current physical album:</strong> {$storage_category}<br>
+            <strong>{'Current file location:'|@translate}</strong> {$current_path}<br>
+            <strong>{'Current physical album:'|@translate}</strong> {$storage_category}<br>
             <br>
-            <strong>{'Select destination (only physical albums are listed):'|@translate}</strong><br>
+            <strong>{'Select destination:'|@translate}</strong>
+            <a class="icon-help-circled" title="{'Only other physical albums are listed. Use the \'Linked Albums\' field on the Properties tab to \'move\' this item into a virtual album.'|@translate}"></a>
+            <br>
             <select class="categoryList" name="cat_id" size="10">
               {html_options options=$categories selected=$categories_selected}
             </select>
+            <br>
           </p>
           <p style="text-align:left"><input class="submit" type="submit" value="{'Move'|@translate}" name="target_album"></p>
         </form>
