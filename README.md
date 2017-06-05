@@ -1,5 +1,5 @@
 # Physical Photo Move
-[Piwigo](http://piwigo.org/) extension to move an item (the physical underlying image/video file) from one physical album to another, preserving all metadata.
+[Piwigo](http://piwigo.org/) extension to move an item (the physical image/video file) from one physical album to another, preserving all metadata.
 
 This is my first attempt at a plug-in for Piwigo!
 
