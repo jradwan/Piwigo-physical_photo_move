@@ -29,8 +29,6 @@ if( !defined("PHPWG_ROOT_PATH") )
 include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 
-//define('COMMUNITY_BASE_URL', get_root_url().'admin.php?page=plugin-community');
-
 // +-----------------------------------------------------------------------+
 // | Check Access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
@@ -51,10 +49,10 @@ $admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id']
 // | Process form                                                          |
 // +-----------------------------------------------------------------------+
 
-if (isset($_FILES['ppm']))
+if (isset($_POST['move_photo']))
 {
 
-  $image_id = $_GET['image_id'];
+//  $image_id = $_GET['image_id'];
 
 //  move_uploaded_file($_FILES['ppm']['tmp_name'], $representative_file_path);
 
@@ -70,10 +68,10 @@ if (isset($_FILES['ppm']))
 //    array('id' => $image_id)
 //    );
       
-//  array_push(
-//    $page['infos'],
-//    l10n('The photo has been moved.')
-//    );
+  array_push(
+    $page['infos'],
+    l10n('The photo has been successfully moved.')
+    );
 
 }
 
@@ -100,7 +98,7 @@ $template->set_filenames(
     )
   );
 
-// retrieve information about current item
+// retrieve information about current photo
 $query = '
 SELECT *
   FROM '.IMAGES_TABLE.'
@@ -109,7 +107,7 @@ SELECT *
 $image_row = pwg_db_fetch_assoc(pwg_query($query));
 $storage_cat_id = $image_row['storage_category_id'];
 
-// retrieve the name of the storage category of the item
+// retrieve the name of the storage category of the photo
 $query = '
 SELECT CONCAT(name, " (", id, ")") as name
   FROM '.CATEGORIES_TABLE.'

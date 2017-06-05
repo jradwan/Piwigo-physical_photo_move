@@ -1,4 +1,4 @@
-<h2>{$TITLE} &#8250; {'Move photo'|@translate} {$TABSHEET_TITLE}</h2>
+<h2>{$TITLE} &#8250; {'Edit photo'|@translate} {$TABSHEET_TITLE}</h2>
 
 <fieldset>
   <legend>{'Move Photo'|@translate}</legend>
@@ -14,14 +14,14 @@
             <strong>{'Current physical album:'|@translate}</strong> {$storage_category}<br>
             <br>
             <strong>{'Select destination:'|@translate}</strong>
-            <a class="icon-help-circled" title="{'Only other physical albums are listed. Use the \'Linked Albums\' field on the Properties tab to \'move\' this item into a virtual album.'|@translate}"></a>
+            <a class="icon-help-circled" title="{'Only other physical albums are listed. Use the \'Linked Albums\' field on the Properties tab to \'move\' this photo into a virtual album.'|@translate}"></a>
             <br>
             <select class="categoryList" name="cat_id" size="10">
               {html_options options=$categories selected=$categories_selected}
             </select>
             <br>
           </p>
-          <p style="text-align:left"><input class="submit" type="submit" value="{'Move'|@translate}" name="target_album"></p>
+          <p style="text-align:left"><input class="submit" type="submit" value="{'Move'|@translate}" name="move_photo"></p>
         </form>
       </td>
     </tr>
