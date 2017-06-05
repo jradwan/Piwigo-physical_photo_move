@@ -1,5 +1,5 @@
 # Physical Photo Move
-[Piwigo](http://piwigo.org/) extension to move an item (the physical image/video file) from one physical album to another, preserving all metadata.
+[Piwigo](http://piwigo.org/) extension to move a photo (the actual file) from one physical album to another, preserving all metadata.
 
 This is my first attempt at a plug-in for Piwigo! I don't use the [virtual albums](http://piwigo.org/doc/doku.php?id=user_documentation:albums_management) feature much as I prefer to have all of my photos stored in folders of my own hierarchical design rather than Piwigo's "./upload/year/month/day/randomfilename.jpg" structure used by the upload mechanism. The problem with using physical albums, however, is that I tend to occasionally re-organize and move a photo or video to a different folder. Then the next time I run Piwigo's synchronization process the file's original location is deleted from the database and re-added in the new folder location. This means all of the metadata associated with the item (tags, description, etc.) are lost and I have to enter them all again.
 
