@@ -23,7 +23,7 @@ function ppm_add_tab($sheets, $id)
   
   if ($id == 'photo')
   {
-    $sheets['ppmove'] = array(
+    $sheets['ppm'] = array(
       'caption' => l10n('Move'),
       'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['image_id'],
       );

@@ -1,7 +1,7 @@
 <h2>{$TITLE} &#8250; {'Move photo'|@translate} {$TABSHEET_TITLE}</h2>
 
 <fieldset>
-  <legend>{'Physical Photo Move'|@translate}</legend>
+  <legend>{'Move Photo'|@translate}</legend>
   <table>
     <tr>
       <td id="albumThumbnail" style="vertical-align:top">
@@ -9,20 +9,14 @@
       </td>
       <td style="vertical-align:top">
         <form id="ppmove" method="post" action="" enctype="multipart/form-data">
-{if isset($show_file_to_move)}
           <p style="text-align:left; margin-top:0;">
-            <label><input type="radio" name="file_to_move" value="main"> {'main file'|@translate} ({$original_filename})</label>
-            <label><input type="radio" name="file_to_move" value="representative" checked="checked"> {'representative picture'|@translate}</label>
-          </p>
-{/if}
-          <p style="text-align:left; margin-top:0;">
-  <fieldset id="catSubset">
-    <legend>{'Select target album:'|@translate}</legend>
-    <select class="categoryList" name="cat" size="10">
-      {html_options options=$category_options selected=$category_options_selected}
-    </select>
-  </fieldset>
-
+            <strong>Current file location:</strong> {$current_path}<br>
+            <strong>Current physical album:</strong> {$storage_category}<br>
+            <br>
+            <strong>{'Select destination (only physical albums are listed):'|@translate}</strong><br>
+            <select class="categoryList" name="cat_id" size="10">
+              {html_options options=$categories selected=$categories_selected}
+            </select>
           </p>
           <p style="text-align:left"><input class="submit" type="submit" value="{'Move'|@translate}" name="target_album"></p>
         </form>

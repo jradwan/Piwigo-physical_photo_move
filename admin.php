@@ -56,34 +56,6 @@ if (isset($_FILES['ppm']))
 
   $image_id = $_GET['image_id'];
 
-  // retrieve the current physical path of the photo 
-  $query = '
-SELECT
-    path
-  FROM '.IMAGES_TABLE.'
-  WHERE id = '.$image_id.'
-;';
-
-  $result = pwg_query($query);
-  $row = pwg_db_fetch_assoc($result);
-  $current_photo_path = $row['path'];
-
-  // retrieve the current physical album of the photo
-  // (a photo should only have ONE physical album)
-  $query = '
-SELECT
-    a.category_id, b.dir
-  FROM '.IMAGE_CATGEGORIES_TABLE.' a, '.CATEGORY_TABLE.' b
-  WHERE a.image_id = '.$image_id.'
-  and   a.category_id = b.id
-  and   b.dir is not null
-;';
-
-  $result = pwg_query($query);
-  $row = pwg_db_fetch_assoc($result);
-  $current_category = $row['a.category_id'];
-  $current_dir      = $row['b.dir'];
-
 //  move_uploaded_file($_FILES['ppm']['tmp_name'], $representative_file_path);
 
 //  $file_infos = pwg_image_infos($representative_file_path);
@@ -128,24 +100,37 @@ $template->set_filenames(
     )
   );
 
-// retrieving direct information about picture
+// retrieve information about current item
 $query = '
 SELECT *
   FROM '.IMAGES_TABLE.'
   WHERE id = '.$_GET['image_id'].'
 ;';
-$row = pwg_db_fetch_assoc(pwg_query($query));
+$image_row = pwg_db_fetch_assoc(pwg_query($query));
+$storage_cat_id = $image_row['storage_category_id'];
 
-if (!in_array(get_extension($row['path']), $conf['picture_ext']) or !empty($row['representative_ext']))
-{
-  $template->assign('show_file_to_update', true);
-}
+// retrieve the name of the storage category of the item
+$query = '
+SELECT CONCAT(name, " (", id, ")") as name
+  FROM '.CATEGORIES_TABLE.'
+  WHERE id = '.$storage_cat_id.'
+;';
+$category_row = pwg_db_fetch_assoc(pwg_query($query));
+
+// populate target album scroll with physical albums only
+$cat_selected = 0;
+$query = 'SELECT id, CONCAT(name, " (", id, ")") as name, uppercats, global_rank FROM '.CATEGORIES_TABLE. ' WHERE dir IS NOT NULL';
+display_select_cat_wrapper($query,
+                           $cat_selected,
+                           'categories',
+                           false);
 
 $template->assign(
   array(
-    'TN_SRC' => DerivativeImage::thumb_url($row),
-    'original_filename' => $row['file'],
-    'TITLE' => render_element_name($row),
+    'TITLE' => render_element_name($image_row),
+    'TN_SRC' => DerivativeImage::thumb_url($image_row),
+    'current_path' => $image_row['path'],
+    'storage_category' => $category_row['name'],
     )
   );
 
