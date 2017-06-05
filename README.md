@@ -14,6 +14,6 @@ Jeremy C. Radwan
 - - -
 ## References
 
-[Piwigo](http://piwigo.org/)
-[Piwigo Extensions](http://piwigo.org/ext/)
-[Piwigo Plugin Tutorial](http://piwigo.org/doc/doku.php?id=dev:extensions:plugin_tutorial1)
+- [Piwigo](http://piwigo.org/)
+- [Piwigo Extensions](http://piwigo.org/ext/)
+- [Piwigo Plugin Tutorial](http://piwigo.org/doc/doku.php?id=dev:extensions:plugin_tutorial1)
