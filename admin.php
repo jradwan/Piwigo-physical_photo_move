@@ -51,13 +51,81 @@ $admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id']
 
 if (isset($_POST['move_photo']))
 {
+  include_once(PHPWG_ROOT_PATH.'admin/include/functions_upload.inc.php');
 
-//  $image_id = $_GET['image_id'];
+  // check selected target category and act accordingly
+  if (isset($_POST['cat_id']))
+  {
+    $target_cat = $_POST['cat_id'];
 
-//  move_uploaded_file($_FILES['ppm']['tmp_name'], $representative_file_path);
+    // retrieve information about current photo
+    $image_info = get_image_infos($_GET['image_id']);
+    $storage_cat_id = $image_info['storage_category_id'];
+    $source_file_path = $image_info['path'];
+    $source_dir = dirname($source_file_path);
+    $source_file_name = basename($source_file_path);
 
-//  $file_infos = pwg_image_infos($representative_file_path);
-      
+    // no move necessary (same category selected)
+    if ($target_cat == $storage_cat_id)
+    {
+      array_push(
+        $page['messages'],
+        l10n('Source and destination are the same. No move attempted.')
+        );
+    }
+    else 
+    {
+      // get destination category information
+      $dest_cat_info = get_cat_info($target_cat);
+      $dest_cat_name = $dest_cat_info['name'];
+      $dest_uppercats = $dest_cat_info['uppercats'];
+      $dest_cat_path = get_fulldirs($dest_uppercats);
+      $dest_cat_path = $dest_cat_path[$target_cat];
+     
+      // check to see if filename already exists in destination
+      if (file_exists($dest_cat_path.'/'.$source_file_name))
+      {
+        // append date-time to filename to avoid overwriting existing file
+        list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
+        $date_string = preg_replace('/[^\d]/', '', $dbnow);
+        // ******* need to strip off extension first and add it after $date_string!
+        $dest_file_path = $dest_cat_path.'/'.$source_file_name.'-'.$date_string;
+      }
+      else
+      {
+        $dest_file_path = $dest_cat_path.'/'.$source_file_name;
+      }
+    
+      // move the file
+      // rename($source_file_path, $dest_file_path);
+      // @chmod($dest_file_path, 0644);
+
+      // debugging messages 
+      array_push(
+        $page['messages'],
+        l10n('source filepath: '.$source_file_path),
+        l10n('source directory: '.$source_dir),
+        l10n('source filename: '.$source_file_name),
+        l10n('target album: '.$dest_cat_name),
+        l10n('fulldirs: '.$dest_cat_path),
+        l10n('dest filepath: '.$dest_file_path)
+        );
+
+      // file successfully moved to $dest_cat_name
+      array_push(
+        $page['infos'],
+        l10n('File successfully moved to '.$dest_cat_name.'.')
+        );
+    }
+  }
+  else // no destination selected
+  {
+    array_push(
+      $page['warnings'],
+      l10n('No destination selected.')
+      );
+  }
+
 //  single_update(
 //    IMAGES_TABLE,
 //    array(
@@ -67,11 +135,6 @@ if (isset($_POST['move_photo']))
 //      ),
 //    array('id' => $image_id)
 //    );
-      
-  array_push(
-    $page['infos'],
-    l10n('The photo has been successfully moved.')
-    );
 
 }
 
@@ -98,37 +161,32 @@ $template->set_filenames(
     )
   );
 
-// retrieve information about current photo
-$query = '
-SELECT *
-  FROM '.IMAGES_TABLE.'
-  WHERE id = '.$_GET['image_id'].'
-;';
-$image_row = pwg_db_fetch_assoc(pwg_query($query));
-$storage_cat_id = $image_row['storage_category_id'];
+// retrieve the id of the storage category of the current photo
+$image_info = get_image_infos($_GET['image_id']);
+$storage_cat_id = $image_info['storage_category_id'];
 
 // retrieve the name of the storage category of the photo
-$query = '
-SELECT CONCAT(name, " (", id, ")") as name
-  FROM '.CATEGORIES_TABLE.'
-  WHERE id = '.$storage_cat_id.'
-;';
-$category_row = pwg_db_fetch_assoc(pwg_query($query));
+$storage_cat_info = get_cat_info($storage_cat_id);
 
-// populate target album scroll with physical albums only
+// populate target category scroll with physical albums only
 $cat_selected = 0;
-$query = 'SELECT id, CONCAT(name, " (", id, ")") as name, uppercats, global_rank FROM '.CATEGORIES_TABLE. ' WHERE dir IS NOT NULL';
-display_select_cat_wrapper($query,
-                           $cat_selected,
-                           'categories',
-                           false);
+$query = '
+SELECT 
+    id, 
+    CONCAT(name, " (", id, ")") as name, 
+    uppercats, 
+    global_rank 
+  FROM '.CATEGORIES_TABLE. ' 
+  WHERE dir IS NOT NULL
+;';
+display_select_cat_wrapper($query, $cat_selected, 'categories', false);
 
 $template->assign(
   array(
-    'TITLE' => render_element_name($image_row),
-    'TN_SRC' => DerivativeImage::thumb_url($image_row),
-    'current_path' => $image_row['path'],
-    'storage_category' => $category_row['name'],
+    'TITLE' => render_element_name($image_info),
+    'TN_SRC' => DerivativeImage::thumb_url($image_info),
+    'current_path' => $image_info['path'],
+    'storage_category' => $storage_cat_info['name'],
     )
   );
 
