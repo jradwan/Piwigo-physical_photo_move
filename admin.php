@@ -53,6 +53,9 @@ if (isset($_POST['move_photo']))
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions_upload.inc.php');
 
+  // toggle test mode (true = no file move or database update will occur)
+  $ppm_test_mode = false;
+
   // check selected target category and act accordingly
   if (isset($_POST['cat_id']))
   {
@@ -71,7 +74,7 @@ if (isset($_POST['move_photo']))
     {
       array_push(
         $page['messages'],
-        l10n('Source and destination are the same. No move attempted.')
+        l10n('Source and destination are the same. Nothing to do.')
         );
     }
     else 
@@ -79,7 +82,7 @@ if (isset($_POST['move_photo']))
       // get destination category information
       $dest_cat_info = get_cat_info($target_cat);
       $dest_cat_name = $dest_cat_info['name'];
-      $dest_uppercats = $dest_cat_info['uppercats'];
+      $dest_uppercats = explode(',',  $dest_cat_info['uppercats']);
       $dest_cat_path = get_fulldirs($dest_uppercats);
       $dest_cat_path = $dest_cat_path[$target_cat];
       $dest_file_exists = false;
@@ -91,33 +94,68 @@ if (isset($_POST['move_photo']))
         // append date-time to filename to avoid overwriting existing file
         list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
         $date_string = preg_replace('/[^\d]/', '', $dbnow);
-        $dest_file_path = $dest_cat_path.'/'.$source_file_name.'-'.$date_string.'.'.$source_file_ext;
+        $dest_file_name = $source_file_name.'-'.$date_string.'.'.$source_file_ext;
       }
       else
       {
-        $dest_file_path = $dest_cat_path.'/'.$source_file_name.'.'.$source_file_ext;
+        $dest_file_name = $source_file_name.'.'.$source_file_ext;
       }
+
+      // build the new destination path and filename
+      $dest_file_path = $dest_cat_path.'/'.$dest_file_name;
     
       // move the file
-      $move_status_ok = rename($source_file_path, $dest_file_path);
-      @chmod($dest_file_path, 0644);
+      $move_status_ok = true;
+      if (!$ppm_test_mode)
+      {
+        $move_status_ok = rename($source_file_path, $dest_file_path);
+        @chmod($dest_file_path, 0644);
+      }
 
       if ($move_status_ok)
       {
-        // file successfully moved to $dest_cat_name
+        // file successfully moved to destination
         array_push(
           $page['infos'],
-          l10n('File successfully moved to '.$dest_cat_name.'.')
+          l10n('File successfully moved to '.$dest_cat_name.' ('.$dest_cat_path.').')
           );
 
         // warning about file renamed
         if ($dest_file_exists)
         {
         array_push(
-          $page['warnings'],
+          $page['messages'],
           l10n('A file named '.$source_file_name.'.'.$source_file_ext.' already existed in the destination. '.
-            'The file was renamed to '.$source_file_name.'-'.$date_string.'.'.$source_file_ext.'.')
+          'The moved file was renamed to '.$dest_file_name.
+            ' to avoid overwriting the original.')
           );
+        }
+       
+        // make the database changes associated with the move 
+        if (!$ppm_test_mode)
+        {
+          // update file, path and storage category on the image table
+          single_update(
+            IMAGES_TABLE,
+            array(
+              'file' => $dest_file_name,
+              'path' => $dest_file_path,
+              'storage_category_id' => $target_cat,
+              ),
+            array('id' => $_GET['image_id'])
+            );
+
+          // update category on the image category table
+          single_update(
+            IMAGE_CATEGORY_TABLE,
+            array(
+              'category_id' => $target_cat,
+              ),
+            array(
+              'image_id' => $_GET['image_id'],
+              'category_id' => $storage_cat_id,
+              )
+            );
         }
       }
       else // an error occurred during the move
@@ -137,28 +175,23 @@ if (isset($_POST['move_photo']))
       );
   }
 
-      // debugging messages 
-      array_push(
-        $page['messages'],
-        l10n('source filepath: '.$source_file_path),
-        l10n('source directory: '.$source_dir),
-        l10n('source filename: '.$source_file_name),
-        l10n('source ext: '.$source_file_ext),
-        l10n('target album: '.$dest_cat_name),
-        l10n('fulldirs: '.$dest_cat_path),
-        l10n('dest filepath: '.$dest_file_path)
-        );
+  // debugging messages 
+  if ($ppm_test_mode)
+  {
+    array_push(
+      $page['warnings'],
+      l10n('Test Mode Enabled'),
+      l10n('source filepath: '.$source_file_path),
+      l10n('source directory: '.$source_dir),
+      l10n('source filename: '.$source_file_name),
+      l10n('source ext: '.$source_file_ext),
+      l10n('target album: '.$dest_cat_name),
+      l10n('fulldirs: '.$dest_cat_path),
+      l10n('dest filepath: '.$dest_file_path),
+      l10n('dest filename: '.$dest_file_name)
+      );
+  }
 
-
-//  single_update(
-//    IMAGES_TABLE,
-//    array(
-//      'representative_ext' => $representative_ext,
-//      'width' => $file_infos['width'],
-//      'height' => $file_infos['height'],
-//      ),
-//    array('id' => $image_id)
-//    );
 
 }
 
