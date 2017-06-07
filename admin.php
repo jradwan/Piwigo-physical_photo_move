@@ -53,8 +53,20 @@ if (isset($_POST['move_photo']))
 {
   include_once(PHPWG_ROOT_PATH.'admin/include/functions_upload.inc.php');
 
-  // toggle test mode (true = no file move or database update will occur)
-  $ppm_test_mode = false;
+  // was simulation (test mode) checked?
+  if (isset($_POST['test_mode']) and $_POST['test_mode'] == 1)
+  {
+    $ppm_test_mode = true;
+    // debugging messages (for simulation)
+    array_push(
+      $page['warnings'],
+      l10n('Simulation selected')
+      );
+  }
+  else
+  {
+    $ppm_test_mode = false;
+  }
 
   // check selected target category and act accordingly
   if (isset($_POST['cat_id']))
@@ -65,6 +77,7 @@ if (isset($_POST['move_photo']))
     $image_info = get_image_infos($_GET['image_id']);
     $storage_cat_id = $image_info['storage_category_id'];
     $source_file_path = $image_info['path'];
+    $source_cat_name = get_cat_info($storage_cat_id)['name'];
     $source_dir = pathinfo($source_file_path)['dirname'];
     $source_file_name = pathinfo($source_file_path)['filename'];
     $source_file_ext = pathinfo($source_file_path)['extension'];
@@ -95,6 +108,13 @@ if (isset($_POST['move_photo']))
         list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
         $date_string = preg_replace('/[^\d]/', '', $dbnow);
         $dest_file_name = $source_file_name.'-'.$date_string.'.'.$source_file_ext;
+
+        array_push(
+          $page['messages'],
+          l10n('A file named '.$source_file_name.'.'.$source_file_ext.' already exists in the destination. '.
+          'The moved file will be renamed to '.$dest_file_name.
+            ' to avoid overwriting the original.')
+          );
       }
       else
       {
@@ -114,23 +134,6 @@ if (isset($_POST['move_photo']))
 
       if ($move_status_ok)
       {
-        // file successfully moved to destination
-        array_push(
-          $page['infos'],
-          l10n('File successfully moved to '.$dest_cat_name.' ('.$dest_cat_path.').')
-          );
-
-        // warning about file renamed
-        if ($dest_file_exists)
-        {
-        array_push(
-          $page['messages'],
-          l10n('A file named '.$source_file_name.'.'.$source_file_ext.' already existed in the destination. '.
-          'The moved file was renamed to '.$dest_file_name.
-            ' to avoid overwriting the original.')
-          );
-        }
-       
         // make the database changes associated with the move 
         if (!$ppm_test_mode)
         {
@@ -156,6 +159,12 @@ if (isset($_POST['move_photo']))
               'category_id' => $storage_cat_id,
               )
             );
+        
+          // file successfully moved to destination
+          array_push(
+            $page['infos'],
+            l10n('File successfully moved to '.$dest_cat_name.'.')
+            );
         }
       }
       else // an error occurred during the move
@@ -165,35 +174,33 @@ if (isset($_POST['move_photo']))
           l10n('An error occured during the file move. Please check the Piwigo and web server logs for details.')
           );
       }
+    
+      // debugging messages (for simulation)
+      if ($ppm_test_mode)
+      {
+        array_push(
+          $page['messages'],
+          l10n('source album: '.$source_cat_name.' (id: '.$storage_cat_id.')'),
+          l10n('source filename: '.$source_file_name.'.'.$source_file_ext),
+          l10n('source directory: '.$source_dir),
+          l10n('source filepath: '.$source_file_path),
+          l10n('destination album: '.$dest_cat_name.' (id: '.$target_cat.')'),
+          l10n('destination filename: '.$dest_file_name),
+          l10n('destination directory: '.$dest_cat_path),
+          l10n('destination filepath: '.$dest_file_path)
+          );
+      }
     } // move file
   }
   else // no destination selected
   {
     array_push(
-      $page['warnings'],
+      $page['messages'],
       l10n('No destination selected.')
       );
   }
 
-  // debugging messages 
-  if ($ppm_test_mode)
-  {
-    array_push(
-      $page['warnings'],
-      l10n('Test Mode Enabled'),
-      l10n('source filepath: '.$source_file_path),
-      l10n('source directory: '.$source_dir),
-      l10n('source filename: '.$source_file_name),
-      l10n('source ext: '.$source_file_ext),
-      l10n('target album: '.$dest_cat_name),
-      l10n('fulldirs: '.$dest_cat_path),
-      l10n('dest filepath: '.$dest_file_path),
-      l10n('dest filename: '.$dest_file_name)
-      );
-  }
-
-
-}
+} // end post
 
 // +-----------------------------------------------------------------------+
 // | Tabs                                                                  |
@@ -226,16 +233,16 @@ $storage_cat_id = $image_info['storage_category_id'];
 $storage_cat_info = get_cat_info($storage_cat_id);
 
 // populate target category scroll with physical albums only
-$cat_selected = 0;
 $query = '
 SELECT 
-    id, 
-    CONCAT(name, " (", id, ")") as name, 
+    id,
+    name, 
     uppercats, 
     global_rank 
   FROM '.CATEGORIES_TABLE. ' 
   WHERE dir IS NOT NULL
 ;';
+$cat_selected = 0;
 display_select_cat_wrapper($query, $cat_selected, 'categories', false);
 
 $template->assign(
@@ -244,6 +251,7 @@ $template->assign(
     'TN_SRC' => DerivativeImage::thumb_url($image_info),
     'current_path' => $image_info['path'],
     'storage_category' => $storage_cat_info['name'],
+    'ppm_test_mode' => true,
     )
   );
 
