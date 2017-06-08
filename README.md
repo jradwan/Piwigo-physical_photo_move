@@ -8,7 +8,21 @@ Physical Photo Move (PPM) is an attempt to alleviate this inconvenience by allow
 - - -
 ## Usage
 
-Instructions and screenshots forthcoming.
+After activating the plugin for your Piwigo site, there will be a "Move" tab in the "Edit Photo" area for any item that is location in a physical album.
+
+![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui.jpg)
+ 
+Select a destination album (only other physical albums are shown) and click "Move." With the simulation checkbox on, only informational messages are displayed (the file is not moved and the database is not updated). 
+
+![debug screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-debug-info.jpg)
+
+If everything in the source and destination looks good, turn off the simulation checkbox, select the destination album again, and click "Move" to move the photo.
+
+![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved.jpg)
+
+_Note:_ any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in. Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database.
+
+_Note #2:_ currently (v0.5) the thumbnails (resizes, etc.) in the photo's source folder are not removed, which means "orphan" thumbnail image files will be left behind. Additionally, new thumbnails in the photos new destination folder are not automatically created (they will be created by Piwigo the first time the photo is viewed in its new location). This may be addressed in a future release but be aware of it for now.
 
 - - -
 ## To Do
