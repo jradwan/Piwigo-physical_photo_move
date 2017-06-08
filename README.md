@@ -22,13 +22,13 @@ If everything in the source and destination looks good, turn off the simulation 
 
 _Note:_ any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in. Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database.
 
-_Note #2:_ currently (v0.5) the thumbnails (resizes, etc.) in the photo's source folder are not removed, which means "orphan" thumbnail image files will be left behind. Additionally, new thumbnails in the photos new destination folder are not automatically created (they will be created by Piwigo the first time the photo is viewed in its new location). This may be addressed in a future release (see issue [#1](https://github.com/jradwan/Piwigo-physical_photo_move/issues/1)) but be aware of it for now.
+_Note #2:_ currently (v0.5) the thumbnails (resizes, etc.) in the photo's source folder are not removed, which means "orphan" thumbnail image files will be left behind. Additionally, new thumbnails in the photos new destination folder are not automatically created (they will be created by Piwigo the first time the photo is viewed in its new location). This may be addressed in a future release but be aware of it for now.
 
 - - -
 ## To Do
 
-- thumbnail management (delete old originals in source, create new ones for destination)
-- link into Batch Manager (to move multiple photos at once)
+- thumbnail management (delete old originals in source, create new ones for destination) (issue [#1](https://github.com/jradwan/Piwigo-physical_photo_move/issues/1))
+- link into Batch Manager (to move multiple photos at once) (issue [#2](https://github.com/jradwan/Piwigo-physical_photo_move/issues/2))
 
 - - -
 ## Contact
