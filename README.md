@@ -11,6 +11,12 @@ Physical Photo Move (PPM) is an attempt to alleviate this inconvenience by allow
 Instructions and screenshots forthcoming.
 
 - - -
+## To Do
+
+- thumbnail management (delete old originals in source, create new ones for destination)
+- link into Batch Manager (to move multiple photos at once)
+
+- - -
 ## Contact
 
 Jeremy C. Radwan
