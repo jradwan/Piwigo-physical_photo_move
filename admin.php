@@ -82,6 +82,17 @@ if (isset($_POST['move_photo']))
     $source_file_name = pathinfo($source_file_path)['filename'];
     $source_file_ext = pathinfo($source_file_path)['extension'];
 
+    // retrieve representative info, if applicable
+    $source_rep_ext = $image_info['representative_ext'];
+    if (!is_null($source_rep_ext))
+    {
+      $source_rep_path = original_to_representative($source_file_path, $source_rep_ext);
+    }
+    else
+    {
+      $source_rep_path = '';
+    }
+
     // no move necessary (same category selected)
     if ($target_cat == $storage_cat_id)
     {
@@ -99,6 +110,8 @@ if (isset($_POST['move_photo']))
       $dest_cat_path = get_fulldirs($dest_uppercats);
       $dest_cat_path = $dest_cat_path[$target_cat];
       $dest_file_exists = false;
+      $dest_rep_ext = '';
+      $dest_rep_path = '';
      
       // check to see if filename already exists in destination
       if (file_exists($dest_cat_path.'/'.$source_file_name.'.'.$source_file_ext))
@@ -159,15 +172,45 @@ if (isset($_POST['move_photo']))
               'category_id' => $storage_cat_id,
               )
             );
-        
-          // file successfully moved to destination
-          array_push(
-            $page['infos'],
-            l10n('File successfully moved to '.$dest_cat_name.'.')
-            );
-        }
+
+          // move representative, if applicable
+          $dest_rep_ext = $image_info['representative_ext'];
+          if (!is_null($dest_rep_ext))
+          {
+            $dest_rep_path = original_to_representative($dest_file_path, $dest_rep_ext);
+
+            // create the pwg_representative folder if it doesn't exist in the destination
+            if (!is_dir($dest_cat_path.'/pwg_representative'))
+            {
+              mkdir($dest_cat_path.'/pwg_representative');
+            }
+
+            $move_status_ok = true;
+            $move_status_ok = rename($source_rep_path, $dest_rep_path);
+            @chmod($dest_rep_path, 0644);
+
+            // remove the pwg_representative directory if it's now empty
+            @rmdir($source_dir.'/pwg_representative');
+          }
+
+          if ($move_status_ok)
+          {
+            // representative successfully moved to destination
+            array_push(
+              $page['infos'],
+              l10n('File successfully moved to '.$dest_cat_name.'.')
+              );
+          }
+          else
+          {
+            array_push(
+              $page['errors'],
+              l10n('An error occured during the representative move. Please check the Piwigo and web server logs for details.')
+              );
+          }
+        } // check for test mode
       }
-      else // an error occurred during the move
+      else // an error occurred during the file move
       {
         array_push(
           $page['errors'],
