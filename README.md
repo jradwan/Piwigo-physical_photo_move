@@ -20,7 +20,7 @@ If everything in the source and destination looks good, turn off the simulation 
 
 ![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved.jpg)
 
-_Note:_ any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in (_unless_ the photo is being moved to a physical album that it is already virtually linked to (see issue [#3](https://github.com/jradwan/Piwigo-physical_photo_move/issues/2))). Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database.
+_Note:_ any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in (_unless_ the photo is being moved to a physical album that it is already virtually linked to (see issue [#3](https://github.com/jradwan/Piwigo-physical_photo_move/issues/3))). Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database.
 
 - - -
 ## To Do
