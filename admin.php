@@ -51,7 +51,6 @@ $admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id']
 
 if (isset($_POST['move_photo']))
 {
-  include_once(PHPWG_ROOT_PATH.'admin/include/functions_upload.inc.php');
 
   // was simulation (test mode) checked?
   if (isset($_POST['test_mode']) and $_POST['test_mode'] == 1)
@@ -173,8 +172,10 @@ if (isset($_POST['move_photo']))
               )
             );
 
-          // move representative, if applicable
+          $move_status_ok = true;
           $dest_rep_ext = $image_info['representative_ext'];
+
+          // move representative (and representative derivatives)
           if (!is_null($dest_rep_ext))
           {
             $dest_rep_path = original_to_representative($dest_file_path, $dest_rep_ext);
@@ -185,17 +186,62 @@ if (isset($_POST['move_photo']))
               mkdir($dest_cat_path.'/pwg_representative');
             }
 
-            $move_status_ok = true;
+            // move representative
             $move_status_ok = rename($source_rep_path, $dest_rep_path);
             @chmod($dest_rep_path, 0644);
 
-            // remove the pwg_representative directory if it's now empty
+            // remove the source pwg_representative directory if it's empty
             @rmdir($source_dir.'/pwg_representative');
+
+            // move derivatives (thumbnails, resizes, etc.) of the representative
+            $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/'.$source_file_name.'-*.'.$dest_rep_ext;
+            $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path.'/pwg_representative/';
+
+            // create the pwg_representative folder if it doesn't exist in the destination
+            if (!is_dir($dest_derivatives))
+            {
+              mkdir($dest_derivatives);
+              // also copy the index.htm file to the new directory
+              copy('./'.PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/index.htm', $dest_derivatives.'/index.htm');
+            }
+
+            // loop through the list of derivatives and move them to the destination
+            foreach (glob($source_derivatives) as $source_derivative_filename)
+            {
+              $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
+              $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
+              @chmod($dest_derivatives.'/'.$dest_derivative_filename, 0644);
+            }
+
+            // count the files left in the source derivatives folder
+            $remaining_file_count = count(scandir(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/')) - 2;
+            if ($remaining_file_count == 1) 
+            {
+              // if there's only one file left in the directory, it should be index.htm; remove it.
+              @unlink(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/index.htm');
+            }
+
+            // now remove the source pwg_representative directory if it's empty
+            @rmdir(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/');
+          }
+          else
+          {
+            // move derivatives (thumbnails, resizes, etc.)
+            $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir.'/'.$source_file_name.'-*.'.$source_file_ext;
+            $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path;
+
+            // loop through the list of derivatives and move them to the destination
+            foreach (glob($source_derivatives) as $source_derivative_filename)
+            {
+              $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
+              $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
+              @chmod($dest_derivatives.'/'.$dest_derivative_filename, 0644);
+            }
           }
 
           if ($move_status_ok)
           {
-            // representative successfully moved to destination
+            // everything successfully moved to destination
             array_push(
               $page['infos'],
               l10n('File successfully moved to '.$dest_cat_name.'.')
@@ -205,10 +251,12 @@ if (isset($_POST['move_photo']))
           {
             array_push(
               $page['errors'],
-              l10n('An error occured during the representative move. Please check the Piwigo and web server logs for details.')
+              l10n('An error occured during the representative/derivatives move. Please check the Piwigo '.
+                   'and web server logs for details.')
               );
           }
-        } // check for test mode
+
+        } // end check for test mode
       }
       else // an error occurred during the file move
       {
