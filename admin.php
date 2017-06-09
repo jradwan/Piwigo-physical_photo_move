@@ -160,6 +160,38 @@ if (isset($_POST['move_photo']))
             array('id' => $_GET['image_id'])
             );
 
+          // check for an existing row for the target category (the image is virtually linked
+          // to the physical destination album already)
+          $query = '
+          SELECT
+            COUNT(*) as count
+            FROM '.IMAGE_CATEGORY_TABLE.'
+            WHERE image_id = '. $_GET['image_id'].'
+            AND category_id = '.$target_cat.'
+            ;';
+          $result = pwg_query($query);
+          $row = pwg_db_fetch_assoc($result);
+          $count = $row['count'];
+
+          // show a message indicating a virtual link has been replaced
+          if ($count == 1)
+          {
+            array_push(
+              $page['messages'],
+              l10n('This file was already virtually linked to the physical destination.'.
+                   ' The virtual link has been removed.')
+              );
+          }
+
+          // delete the existing virtual link
+          $query = '
+          DELETE
+            FROM '.IMAGE_CATEGORY_TABLE.'
+            WHERE image_id = '. $_GET['image_id'].'
+            AND category_id = '.$target_cat.'
+            ;';
+          pwg_query($query);
+
           // update category on the image category table
           single_update(
             IMAGE_CATEGORY_TABLE,
