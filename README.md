@@ -1,7 +1,7 @@
 # Physical Photo Move
 PPM is a [Piwigo](http://piwigo.org/) extension to move a photo (the actual file) from one physical album to another, preserving all metadata.
 
-This is my first attempt at developing a plug-in for Piwigo! I don't use the [virtual albums](http://piwigo.org/doc/doku.php?id=user_documentation:albums_management) feature much as I prefer to have all of my photos stored in folders of my own hierarchical design rather than Piwigo's structure used by the upload mechanism (i.e., "./upload/year/month/day/randomfilename.jpg"). The problem with using physical albums, however, is that I tend to occasionally re-organize and move a photo or video to a different folder. Then the next time I run Piwigo's synchronization process the file's original location is deleted from the database and re-added in the new folder location. This means all of the metadata associated with the item (tags, description, etc.) are lost and I have to enter them all again.
+I don't use the [virtual albums](http://piwigo.org/doc/doku.php?id=user_documentation:albums_management) feature much as I prefer to have all of my photos stored in folders of my own hierarchical design rather than Piwigo's structure used by the upload mechanism (i.e., "./upload/year/month/day/randomfilename.jpg"). The problem with using physical albums, however, is that I tend to occasionally re-organize and move a photo or video to a different folder. Then the next time I run Piwigo's synchronization process the file's original location is deleted from the database and re-added in the new folder location. This means all of the metadata associated with the item (tags, description, etc.) are lost and I have to enter them all again.
 
 PPM (Physical Photo Move) is an attempt to alleviate this inconvenience by allowing an existing item in a physical folder (i.e., not in the upload folder and linked into a virtual album) to be moved to another folder and keep all the existing metadata.
 
@@ -29,6 +29,11 @@ Only the stored album (i.e., the folder location on disk) is changed, along with
 ![merge](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-virtual-merge.jpg)
 
 All previously generated representatives (thumbnails for non-image files) and derivates (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
+
+- - -
+## Disclaimer
+
+This is my first attempt at developing a plug-in for Piwigo! It was created to address a specific problem I was having with photo management and physical albums. Since PPM makes file system and database changes,  _please_ make sure you have a backup of your Piwigo folder structure and database before trying my plugin for the first time. No program is without bugs and while I've tested the plugin extensively myself, there's always the possibility for something to go wrong. Use simulation mode and check the debugging messages closely before allowing the plugin to make actual changes for the first time. If you find a problem, please open an issue [here](https://github.com/jradwan/Piwigo-physical_photo_move/issues) on Github or on the [Piwigo forums](http://piwigo.org/forum/) and let me know!
 
 - - -
 ## To Do
