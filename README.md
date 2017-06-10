@@ -20,7 +20,15 @@ If everything in the source and destination looks good, turn off the simulation 
 
 ![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved.jpg)
 
-_Note:_ any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in (_unless_ the photo is being moved to a physical album that it is already virtually linked to (see issue [#3](https://github.com/jradwan/Piwigo-physical_photo_move/issues/3))). Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database.
+If a file with the same name already exists in the destination, the source file will be renamed and an information message will be displayed:
+
+![file renamed](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-rename.jpg)
+
+Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database. Any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in (linked albums). If the photo is being moved to a physical album that it is already linked to (see issue [#3](https://github.com/jradwan/Piwigo-physical_photo_move/issues/3)), a message will be displayed indicating the virtual link has been removed:
+
+![merge](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-virtual-merge.jpg)
+
+All previously generated representatives (thumbnails for non-image files) and derivates (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
 
 - - -
 ## To Do
