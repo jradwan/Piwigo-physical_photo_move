@@ -59,7 +59,7 @@ if (isset($_POST['move_photo']))
     // debugging messages (for simulation)
     array_push(
       $page['warnings'],
-      l10n('Simulation selected')
+      l10n('MSG_TEST_MODE_ON')
       );
   }
   else
@@ -97,7 +97,7 @@ if (isset($_POST['move_photo']))
     {
       array_push(
         $page['messages'],
-        l10n('Source and destination are the same. Nothing to do.')
+        l10n('MSG_NO_WORK')
         );
     }
     else 
@@ -121,11 +121,13 @@ if (isset($_POST['move_photo']))
         $date_string = preg_replace('/[^\d]/', '', $dbnow);
         $dest_file_name = $source_file_name.'-'.$date_string.'.'.$source_file_ext;
 
+        // build rename message
+        $rename_msg = l10n('MESSAGE_RENAME_1').$source_file_name.'.'.$source_file_ext.
+          l10n('MSG_RENAME_2').$dest_file_name.l10n('MSG_RENAME_3');
+
         array_push(
           $page['messages'],
-          l10n('A file named '.$source_file_name.'.'.$source_file_ext.' already exists in the destination. '.
-          'The moved file will be renamed to '.$dest_file_name.
-            ' to avoid overwriting the original.')
+            sprintf($rename_msg)
           );
       }
       else
@@ -178,8 +180,7 @@ if (isset($_POST['move_photo']))
           {
             array_push(
               $page['messages'],
-              l10n('This file was already virtually linked to the physical destination.'.
-                   ' The virtual link has been removed.')
+              l10n('MSG_LINK_REMOVED')
               );
           }
 
@@ -274,17 +275,17 @@ if (isset($_POST['move_photo']))
           if ($move_status_ok)
           {
             // everything successfully moved to destination
+            $success_msg = l10n('MSG_SUCCESS').$dest_cat_name.'.';
             array_push(
               $page['infos'],
-              l10n('File successfully moved to '.$dest_cat_name.'.')
+              sprintf($success_msg)
               );
           }
           else
           {
             array_push(
               $page['errors'],
-              l10n('An error occured during the representative/derivatives move. Please check the Piwigo '.
-                   'and web server logs for details.')
+              l10n('MSG_REP_MOVE_ERR')
               );
           }
 
@@ -294,23 +295,32 @@ if (isset($_POST['move_photo']))
       {
         array_push(
           $page['errors'],
-          l10n('An error occured during the file move. Please check the Piwigo and web server logs for details.')
+          l10n('MSG_FILE_MOVE_ERR')
           );
       }
     
       // debugging messages (for simulation)
       if ($ppm_test_mode)
       {
+        // build debug strings
+        $debug_line_1 = l10n('DBG_SRC_ALBUM').$source_cat_name.' (id: '.$storage_cat_id.')';
+        $debug_line_2 = l10n('DBG_SRC_FILE').$source_file_name.'.'.$source_file_ext;
+        $debug_line_3 = l10n('DBG_SRC_DIR').$source_dir;
+        $debug_line_4 = l10n('DBG_SRC_PATH').$source_file_path;
+        $debug_line_5 = l10n('DBG_DEST_ALBUM').$dest_cat_name.' (id: '.$target_cat.')';
+        $debug_line_6 = l10n('DBG_DEST_FILE').$dest_file_name;
+        $debug_line_7 = l10n('DBG_DEST_DIR').$dest_cat_path;
+        $debug_line_8 = l10n('DBG_DEST_FILE').$dest_file_path;
         array_push(
           $page['messages'],
-          l10n('source album: '.$source_cat_name.' (id: '.$storage_cat_id.')'),
-          l10n('source filename: '.$source_file_name.'.'.$source_file_ext),
-          l10n('source directory: '.$source_dir),
-          l10n('source filepath: '.$source_file_path),
-          l10n('destination album: '.$dest_cat_name.' (id: '.$target_cat.')'),
-          l10n('destination filename: '.$dest_file_name),
-          l10n('destination directory: '.$dest_cat_path),
-          l10n('destination filepath: '.$dest_file_path)
+          sprintf($debug_line_1),
+          sprintf($debug_line_2),
+          sprintf($debug_line_3),
+          sprintf($debug_line_4),
+          sprintf($debug_line_5),
+          sprintf($debug_line_6),
+          sprintf($debug_line_7),
+          sprintf($debug_line_8)
           );
       }
     } // move file
@@ -319,7 +329,7 @@ if (isset($_POST['move_photo']))
   {
     array_push(
       $page['messages'],
-      l10n('No destination selected.')
+      l10n('MSG_NO_DEST')
       );
   }
 
