@@ -8,7 +8,7 @@ PPM (Physical Photo Move) is an attempt to alleviate this inconvenience by allow
 - - -
 ## Usage
 
-After activating the plugin for your Piwigo site, there will be a "Move" tab in the "Edit Photo" area for any item that is location in a physical album.
+After activating the plugin for your Piwigo site, there will be a "Move" tab in the "Edit Photo" area for any item that is located in a physical album.
 
 ![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui.jpg)
  
@@ -20,7 +20,7 @@ If everything in the source and destination looks good, turn off the simulation 
 
 ![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved.jpg)
 
-If a file with the same name already exists in the destination, the source file will be renamed and an information message will be displayed:
+If a file with the same name already exists in the destination, the source file will be renamed before it is moved and an informational message will be displayed:
 
 ![file renamed](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-rename.jpg)
 
