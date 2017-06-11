@@ -27,6 +27,5 @@ $lang['DBG_DEST_ALBUM'] = 'destination album: ';
 $lang['DBG_DEST_FILE'] = 'destination filename: ';
 $lang['DBG_DEST_DIR'] = 'destination directory: ';
 $lang['DBG_DEST_PATH'] = 'destination filepath: ';
-
-
+$lang['BATCH_MENU'] = 'Move to physical album';
 ?>
