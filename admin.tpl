@@ -17,11 +17,6 @@
 </fieldset>
 
 <form id="ppmove" method="post" action="" enctype="multipart/form-data">
-  <fieldset id="test_mode">
-    <legend>{'TEST_MODE'|@translate}</legend>
-      <label><input type="checkbox" name="test_mode" value="1" {if $ppm_test_mode}checked="checked"{/if} /> {'TEST_MODE_DESCR'|@translate}</label>
-  </fieldset>
-
   <fieldset>
     <legend>
       {'DEST_ALBUM'|@translate}
@@ -30,6 +25,8 @@
     <select class="categoryList" name="cat_id" size="10">
       {html_options options=$categories selected=$categories_selected}
     </select>
+    <p>
+    <label><input type="checkbox" name="test_mode" value="1" {if $ppm_test_mode}checked="checked"{/if} /> {'TEST_MODE_DESCR'|@translate}</label>
     <p style="text-align:left"><input class="submit" type="submit" value="{'MOVE_BUTTON'|@translate}" name="move_photo"></p>
   </fieldset>
 </form>
