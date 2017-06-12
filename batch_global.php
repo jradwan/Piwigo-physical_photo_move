@@ -26,6 +26,8 @@ if( !defined("PHPWG_ROOT_PATH") )
   die ("Hacking attempt!");
 }
 
+include_once(PPM_PATH.'include/functions.inc.php');
+
 // Add ppm drop down menu item to the batch manager
 add_event_handler('loc_end_element_set_global', 'ppm_batch_global');
 
@@ -41,8 +43,8 @@ function ppm_batch_global()
   // assign the template for batch management
   $template->set_filename('ppm_batch_global', PPM_PATH.'/batch_global.tpl');
 
-  // populate target category scroll with physical albums only
-  require(PPM_PATH.'include/ppm_dest_album_list.inc.php');
+  // populate the selection scroll with physical albums
+  ppm_list_physical_albums();
 
   // add item to the "choose action" dropdown in the batch manager
   $template->append('element_set_global_plugins_actions', array(
@@ -59,26 +61,30 @@ function ppm_batch_global_submit($action, $collection)
 {
   if ($action == 'ppm')
   {
-
     global $page;
 
-    $target_cat_id = pwg_db_real_escape_string($_POST['target_cat_id']);
+    $ppm_test_mode = ppm_check_test_mode();
 
-    // need to call existing code here! just debug for now to make sure the
-    // target album is captured
-    $infos = l10n('DEST_ALBUM').': '.$target_cat_id;
-    $warnings = 'Images: ';
-    // $collection will be an array of image ids ... loop through this and pass each
-    // individually into the move function?
-    foreach ($collection as $id)
+    // check selected target category and act accordingly
+    if (isset($_POST['cat_id']))
     {
-      $warnings .= $id.',';
+      $target_cat = $_POST['cat_id'];
+
+      // $collection will be an array of image ids so loop through this 
+      // and process each individually 
+      foreach ($collection as $id)
+      {
+        ppm_move_item($target_cat, $id, $ppm_test_mode);
+      }
     }
-
-    $page['warnings'] = $warnings;
-    $page['infos'] = $infos;
-
-  }
+    else // no destination selected
+    {
+      array_push(
+        $page['messages'],
+        l10n('MSG_NO_DEST')
+        );
+    } 
+  } // check $action == 'ppm'
 }
 
 ?>
