@@ -366,17 +366,7 @@ $storage_cat_id = $image_info['storage_category_id'];
 $storage_cat_info = get_cat_info($storage_cat_id);
 
 // populate target category scroll with physical albums only
-$query = '
-SELECT 
-    id,
-    name, 
-    uppercats, 
-    global_rank 
-  FROM '.CATEGORIES_TABLE. ' 
-  WHERE dir IS NOT NULL
-;';
-$cat_selected = 0;
-display_select_cat_wrapper($query, $cat_selected, 'categories', false);
+require(PPM_PATH.'include/ppm_dest_album_list.inc.php');
 
 $template->assign(
   array(
