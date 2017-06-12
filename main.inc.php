@@ -15,18 +15,9 @@ if (!defined('PHPWG_ROOT_PATH'))
 
 define('PPM_PATH', PHPWG_PLUGINS_PATH.basename(dirname(__FILE__)).'/');
 
+
 // add ppm tab to items in physical albums
 add_event_handler('tabsheet_before_select','ppm_add_tab', 50, 2);
-
-// add language/translation support
-add_event_handler('loading_lang', 'ppm_loading_lang');
-
-// Add ppm drop down menu item to the batch manager
-add_event_handler('loc_end_element_set_global', 'ppm_batch_global');
-
-// Add ppm handler to the submit event of the batch manager
-add_event_handler('element_set_global_action', 'ppm_batch_global_submit', 50, 2);
-
 
 function ppm_add_tab($sheets, $id)
 {  
@@ -51,55 +42,16 @@ function ppm_add_tab($sheets, $id)
 }
 
 
+// add language/translation support
+add_event_handler('loading_lang', 'ppm_loading_lang');
+
 function ppm_loading_lang()
 {
   load_language('plugin.lang', PPM_PATH);
 }
 
 
-function ppm_batch_global()
-{
-  global $template;
- 
-  // assign the template for batch management
-  $template->set_filename('ppm_batch_global', PPM_PATH.'/batch_global.tpl');
-
-  // populate target category scroll with physical albums only
-  $query = '
-  SELECT
-      id,
-      name,
-      uppercats,
-      global_rank
-    FROM '.CATEGORIES_TABLE. '
-    WHERE dir IS NOT NULL
-  ;';
-  $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'categories', false);
-
-  // add item to the "choose action" dropdown in the batch manager
-  $template->append('element_set_global_plugins_actions', array(
-    'ID' => 'ppm',
-    'NAME' => l10n('BATCH_MENU'),
-    'CONTENT' => $template->parse('ppm_batch_global', true)
-    )
-  );
-}
-
-
-// process the submit action
-function ppm_batch_global_submit($action, $collection)
-{
-  if ($action == 'ppm')
-  {
-    $target_cat_id = pwg_db_real_escape_string($_POST['target_cat_id']);
-
-    // need to call existing code here! just debug for now to make sure the
-    // target album is captured
-    $temp_debug = l10n('DEST_ALBUM').': '.$target_cat_id;
-    var_dump($temp_debug);
-
-  }
-}
+// add ppm into batch manager (global mode)
+include_once(PPM_PATH.'batch_global.php');
 
 ?>
