@@ -374,7 +374,6 @@ $template->assign(
     'TN_SRC' => DerivativeImage::thumb_url($image_info),
     'current_path' => $image_info['path'],
     'storage_category' => $storage_cat_info['name'],
-    'ppm_test_mode' => true,
     )
   );
 

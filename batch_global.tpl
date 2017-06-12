@@ -6,5 +6,5 @@
     {html_options options=$categories selected=$categories_selected}
   </select>
   <p>
-  <label><input type="checkbox" name="test_mode" value="1" {if $ppm_test_mode}checked="checked"{/if} /> {'TEST_MODE_DESCR'|@translate}</label>
+  <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
 </div>
