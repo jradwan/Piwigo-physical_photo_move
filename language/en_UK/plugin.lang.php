@@ -20,11 +20,7 @@ $lang['MSG_REP_MOVE_ERR'] = 'An error occured during the representative/derivati
 $lang['MSG_SUCCESS'] = 'File successfully moved to ';
 $lang['MSG_FILE_MOVE_ERR'] = 'An error occured during the file move. Please check the Piwigo and web server logs for details';
 $lang['MSG_NO_DEST'] = 'No destination selected.';
-$lang['DBG_SRC'] = 'SOURCE';
-$lang['DBG_DEST'] = 'DESTINATION';
-$lang['DBG_ALBUM'] = 'album: ';
-$lang['DBG_FILE'] = 'filename: ';
-$lang['DBG_DIR'] = 'directory: ';
-$lang['DBG_PATH'] = 'filepath: ';
+$lang['DBG_SRC'] = 'Source:';
+$lang['DBG_DEST'] = 'Destination:';
 $lang['BATCH_MENU'] = 'Move to physical album';
 ?>

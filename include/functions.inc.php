@@ -100,7 +100,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         l10n('MSG_RENAME_2').$dest_file_name.l10n('MSG_RENAME_3');
 
       array_push(
-        $page['messages'],
+        $page['warnings'],
           sprintf($rename_msg)
         );
     }
@@ -112,6 +112,21 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
     // build the new destination path and filename
     $dest_file_path = $dest_cat_path.'/'.$dest_file_name;
     
+    // build debugging messages (for test mode)
+    if ($ppm_test_mode)
+    {
+      // build debug strings
+      $debug_line_1  = l10n('DBG_SRC').' '.$source_file_path.' ('.$source_cat_name.')';
+      $debug_line_2  = l10n('DBG_DEST').' '.$dest_file_path.' ('.$dest_cat_name.')';
+
+      array_push(
+        $page['messages'],
+        sprintf($debug_line_1),
+        sprintf($debug_line_2),
+        sprintf('-----------------')
+        );
+    }
+
     // move the file
     $move_status_ok = true;
     if (!$ppm_test_mode)
@@ -142,7 +157,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         $unlink_msg = $source_file_name.'.'.$source_file_ext.' '.l10n('MSG_LINK_REMOVED');
 
         array_push(
-          $page['messages'],
+          $page['warnings'],
           sprintf($unlink_msg)
           );
       }
@@ -280,37 +295,6 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
       array_push(
         $page['errors'],
         sprintf($error_msg)
-        );
-    }
-    
-    // debugging messages (for simulation)
-    if ($ppm_test_mode)
-    {
-      // build debug strings
-      $debug_line_1  = l10n('DBG_SRC');
-      $debug_line_2  = l10n('DBG_ALBUM').$source_cat_name.' (id: '.$storage_cat_id.')';
-      $debug_line_3  = l10n('DBG_FILE').$source_file_name.'.'.$source_file_ext;
-      $debug_line_4  = l10n('DBG_DIR').$source_dir;
-      $debug_line_5  = l10n('DBG_PATH').$source_file_path;
-      $debug_line_6  = l10n('DBG_DEST');
-      $debug_line_7  = l10n('DBG_ALBUM').$dest_cat_name.' (id: '.$target_cat.')';
-      $debug_line_8  = l10n('DBG_FILE').$dest_file_name;
-      $debug_line_9  = l10n('DBG_DIR').$dest_cat_path;
-      $debug_line_10 = l10n('DBG_FILE').$dest_file_path;
-
-      array_push(
-        $page['messages'],
-        sprintf($debug_line_1),
-        sprintf($debug_line_2),
-        sprintf($debug_line_3),
-        sprintf($debug_line_4),
-        sprintf($debug_line_5),
-        sprintf($debug_line_6),
-        sprintf($debug_line_7),
-        sprintf($debug_line_8),
-        sprintf($debug_line_9),
-        sprintf($debug_line_10),
-        sprintf('-----------------')
         );
     }
   } // move file

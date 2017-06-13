@@ -1,7 +1,7 @@
 <?php 
 /*
 Plugin Name: Physical Photo Move
-Version: 0.8
+Version: 1.0
 Description: Move a photo (the actual file) from one physical album to another, preserving all metadata.
 Plugin URI: http://piwigo.org/ext/extension_view.php?eid=859
 Author: windracer
