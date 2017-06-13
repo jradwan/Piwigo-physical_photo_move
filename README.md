@@ -30,6 +30,14 @@ Only the stored album (i.e., the folder location on disk) is changed, along with
 
 All previously generated representatives (thumbnails for non-image files) and derivates (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
 
+PPM also supports Piwigo's Batch Manager for moving multiple items at a time. In global mode, select the "Move to physical album" action to show the destination album list:
+
+![batch_mode](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-batch-ui.jpg)
+
+Follow the same instructions above to batch move the items to the selected destination album. Multiple messages will be displayed showing the status of each file:
+
+![batch_debug](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-batch-debug-info.jpg)
+
 - - -
 ## Disclaimer
 
@@ -38,7 +46,7 @@ This is my first attempt at developing a plug-in for Piwigo! It was created to a
 - - -
 ## To Do
 
-- link into Batch Manager (to move multiple photos at once) (issue [#2](https://github.com/jradwan/Piwigo-physical_photo_move/issues/2))
+- nothing, as of v1.0 release
 
 - - -
 ## Contact
