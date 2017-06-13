@@ -20,9 +20,9 @@ function ppm_check_test_mode()
   }
 }
 
+// return list of categories that are actual physical albums
 function ppm_list_physical_albums()
 {
-  // return list of categories that are actual physical albums
   $query = '
   SELECT
       id,
@@ -65,9 +65,13 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
   // no move necessary (same category selected)
   if ($target_cat == $storage_cat_id)
   {
+    // build no work message
+    $no_work_msg = $source_file_name.'.'.$source_file_ext.': '.l10n('MSG_NO_WORK_1').' ('.
+      $source_cat_name.') - '.l10n('MSG_NO_WORK_2');
+
     array_push(
       $page['messages'],
-      l10n('MSG_NO_WORK')
+      sprintf($no_work_msg)
       );
   }
   else 
@@ -90,6 +94,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
       list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
       $date_string = preg_replace('/[^\d]/', '', $dbnow);
       $dest_file_name = $source_file_name.'-'.$date_string.'.'.$source_file_ext;
+
        // build rename message
       $rename_msg = l10n('MSG_RENAME_1').$source_file_name.'.'.$source_file_ext.
         l10n('MSG_RENAME_2').$dest_file_name.l10n('MSG_RENAME_3');
@@ -117,6 +122,31 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 
     if ($move_status_ok)
     {
+      // check for an existing row for the target category (the image is virtually linked
+      // to the physical destination album already)
+      $query = '
+      SELECT
+        COUNT(*) as count
+        FROM '.IMAGE_CATEGORY_TABLE.'
+        WHERE image_id = '.$id.'
+        AND category_id = '.$target_cat.'
+        ;';
+      $result = pwg_query($query);
+      $row = pwg_db_fetch_assoc($result);
+      $count = $row['count'];
+
+      // show a message indicating a virtual link will be replaced
+      if ($count == 1)
+      {
+        // build unlink message
+        $unlink_msg = $source_file_name.'.'.$source_file_ext.' '.l10n('MSG_LINK_REMOVED');
+
+        array_push(
+          $page['messages'],
+          sprintf($unlink_msg)
+          );
+      }
+
       // make the database changes associated with the move 
       if (!$ppm_test_mode)
       {
@@ -128,36 +158,14 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
             'path' => $dest_file_path,
             'storage_category_id' => $target_cat,
             ),
-          array('id' => $_GET['image_id'])
+          array('id' => $id)
           );
 
-        // check for an existing row for the target category (the image is virtually linked
-        // to the physical destination album already)
-        $query = '
-        SELECT
-          COUNT(*) as count
-          FROM '.IMAGE_CATEGORY_TABLE.'
-          WHERE image_id = '. $_GET['image_id'].'
-          AND category_id = '.$target_cat.'
-          ;';
-        $result = pwg_query($query);
-        $row = pwg_db_fetch_assoc($result);
-        $count = $row['count'];
-
-        // show a message indicating a virtual link has been replaced
-        if ($count == 1)
-        {
-          array_push(
-            $page['messages'],
-            l10n('MSG_LINK_REMOVED')
-            );
-        }
-
-        // delete the existing virtual link
+        // delete an existing virtual link
         $query = '
         DELETE
           FROM '.IMAGE_CATEGORY_TABLE.'
-          WHERE image_id = '. $_GET['image_id'].'
+          WHERE image_id = '. $id.'
           AND category_id = '.$target_cat.'
           ;';
         pwg_query($query);
@@ -169,7 +177,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
             'category_id' => $target_cat,
             ),
           array(
-            'image_id' => $_GET['image_id'],
+            'image_id' => $id,
             'category_id' => $storage_cat_id,
             )
           );
@@ -243,8 +251,9 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 
         if ($move_status_ok)
         {
-          // everything successfully moved to destination
-          $success_msg = l10n('MSG_SUCCESS').$dest_cat_name.'.';
+          // build success message
+          $success_msg = $dest_file_name.': '.l10n('MSG_SUCCESS').$dest_cat_name.'.';
+
           array_push(
             $page['infos'],
             sprintf($success_msg)
@@ -252,9 +261,12 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         }
         else
         {
+          // build representative move error message
+          $error_msg = $dest_file_name.': '.l10n('MSG_REP_MOVE_ERR');
+
           array_push(
             $page['errors'],
-            l10n('MSG_REP_MOVE_ERR')
+            sprinft($error_msg)
             );
         }
 
@@ -262,9 +274,12 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
     }
     else // an error occurred during the file move
     {
+      // build file move error message
+      $error_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_ERR');
+
       array_push(
         $page['errors'],
-        l10n('MSG_FILE_MOVE_ERR')
+        sprintf($error_msg)
         );
     }
     
@@ -272,14 +287,17 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
     if ($ppm_test_mode)
     {
       // build debug strings
-      $debug_line_1 = l10n('DBG_SRC_ALBUM').$source_cat_name.' (id: '.$storage_cat_id.')';
-      $debug_line_2 = l10n('DBG_SRC_FILE').$source_file_name.'.'.$source_file_ext;
-      $debug_line_3 = l10n('DBG_SRC_DIR').$source_dir;
-      $debug_line_4 = l10n('DBG_SRC_PATH').$source_file_path;
-      $debug_line_5 = l10n('DBG_DEST_ALBUM').$dest_cat_name.' (id: '.$target_cat.')';
-      $debug_line_6 = l10n('DBG_DEST_FILE').$dest_file_name;
-      $debug_line_7 = l10n('DBG_DEST_DIR').$dest_cat_path;
-      $debug_line_8 = l10n('DBG_DEST_FILE').$dest_file_path;
+      $debug_line_1  = l10n('DBG_SRC');
+      $debug_line_2  = l10n('DBG_ALBUM').$source_cat_name.' (id: '.$storage_cat_id.')';
+      $debug_line_3  = l10n('DBG_FILE').$source_file_name.'.'.$source_file_ext;
+      $debug_line_4  = l10n('DBG_DIR').$source_dir;
+      $debug_line_5  = l10n('DBG_PATH').$source_file_path;
+      $debug_line_6  = l10n('DBG_DEST');
+      $debug_line_7  = l10n('DBG_ALBUM').$dest_cat_name.' (id: '.$target_cat.')';
+      $debug_line_8  = l10n('DBG_FILE').$dest_file_name;
+      $debug_line_9  = l10n('DBG_DIR').$dest_cat_path;
+      $debug_line_10 = l10n('DBG_FILE').$dest_file_path;
+
       array_push(
         $page['messages'],
         sprintf($debug_line_1),
@@ -289,7 +307,10 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         sprintf($debug_line_5),
         sprintf($debug_line_6),
         sprintf($debug_line_7),
-        sprintf($debug_line_8)
+        sprintf($debug_line_8),
+        sprintf($debug_line_9),
+        sprintf($debug_line_10),
+        sprintf('-----------------')
         );
     }
   } // move file
