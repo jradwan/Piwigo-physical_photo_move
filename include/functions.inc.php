@@ -255,6 +255,12 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
           $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir.'/'.$source_file_name.'-*.'.$source_file_ext;
           $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path;
 
+          // create the pwg_representative folder if it doesn't exist in the destination
+          if (!is_dir($dest_derivatives))
+          {
+            mkdir($dest_derivatives);
+          }
+
           // loop through the list of derivatives and move them to the destination
           foreach (glob($source_derivatives) as $source_derivative_filename)
           {
@@ -262,6 +268,17 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
             $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
             @chmod($dest_derivatives.'/'.$dest_derivative_filename, 0644);
           }
+
+          // count the files left in the source derivatives folder
+          $remaining_file_count = count(scandir(PWG_DERIVATIVE_DIR.$source_dir)) - 2;
+          if ($remaining_file_count == 1)
+          {
+            // if there's only one file left in the directory, it should be index.htm; remove it.
+            @unlink(PWG_DERIVATIVE_DIR.$source_dir.'/index.htm');
+          }
+
+          // now remove the source derivatives directory if it's empty
+          @rmdir(PWG_DERIVATIVE_DIR.$source_dir);
         }
 
         if ($move_status_ok)
@@ -281,7 +298,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 
           array_push(
             $page['errors'],
-            sprinft($error_msg)
+            sprintf($error_msg)
             );
         }
 
