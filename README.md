@@ -46,7 +46,7 @@ This is my first attempt at developing a plug-in for Piwigo! It was created to a
 - - -
 ## To Do
 
-- move an entire album (see issue [#5](https://github.com/jradwan/Piwigo-physical_photo_move/issues/4))
+- move an entire album (see issue [#4](https://github.com/jradwan/Piwigo-physical_photo_move/issues/4))
 
 - - -
 ## Contact
