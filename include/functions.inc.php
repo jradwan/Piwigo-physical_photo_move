@@ -317,4 +317,10 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
   } // move file
 }
 
+// process move of album to destination
+function ppm_move_album($target_cat, $id, $ppm_test_mode)
+{
+
+} // move album
+
 ?>

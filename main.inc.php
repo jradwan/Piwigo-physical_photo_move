@@ -1,8 +1,8 @@
 <?php 
 /*
 Plugin Name: Physical Photo Move
-Version: 1.01
-Description: Move a photo (the actual file) from one physical album to another, preserving all metadata.
+Version: 1.10
+Description: Move a photo (file) or album (directory) from one physical album to another, preserving all metadata.
 Plugin URI: http://piwigo.org/ext/extension_view.php?eid=859
 Author: windracer
 Author URI: http://www.windracer.net/blog
@@ -16,7 +16,7 @@ if (!defined('PHPWG_ROOT_PATH'))
 define('PPM_PATH', PHPWG_PLUGINS_PATH.basename(dirname(__FILE__)).'/');
 
 
-// add ppm tab to items in physical albums
+// add ppm tab to items (photos and albums) in physical albums
 add_event_handler('tabsheet_before_select','ppm_add_tab', 50, 2);
 
 function ppm_add_tab($sheets, $id)
@@ -37,6 +37,20 @@ function ppm_add_tab($sheets, $id)
       'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['image_id'],
       );
   }
+
+  if ($id == 'album')
+  {
+    // only add tab for "physical" albums (FTP sync, not uploaded)
+    $query = 'SELECT
+                  dir
+              FROM '.CATEGORIES_TABLE.'
+              WHERE id = '.$_GET['cat_id'].'
+              AND dir is not NULL;';
+    $result = pwg_query($query);
+    if (!pwg_db_num_rows($result)) return $sheets;
+
+    $sheets['ppm'] = array(
+      'caption' => l10n('MOVE_BUTTON'),
   
   return $sheets;
 }
