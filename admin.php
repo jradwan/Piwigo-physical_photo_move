@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based picture gallery                                  |
 // +-----------------------------------------------------------------------+
-// | Copyright(C) 2008-2017 Piwigo Team                  http://piwigo.org |
+// | Copyright(C) 2008-2018 Piwigo Team                  http://piwigo.org |
 // | Copyright(C) 2003-2008 PhpWebGallery Team    http://phpwebgallery.net |
 // | Copyright(C) 2002-2003 Pierrick LE GALL   http://le-gall.net/pierrick |
 // +-----------------------------------------------------------------------+
@@ -72,17 +72,15 @@ if (isset($_POST['move_photo']))
 } 
 
 // +-----------------------------------------------------------------------+
-// | Tabs                                                                  |
+// | Tab                                                                   |
 // +-----------------------------------------------------------------------+
 
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 
 $page['tab'] = 'ppm';
-
 $tabsheet = new tabsheet();
-$tabsheet->set_id('photo');
-$tabsheet->select('ppm');
-$tabsheet->assign();
+
+// ids are set below in template init (to determine photo vs album)
 
 // +-----------------------------------------------------------------------+
 // |                             template init                             |
@@ -94,12 +92,42 @@ $template->set_filenames(
     )
   );
 
-// retrieve the id of the storage category of the current photo
+// retrieve the album (category) id
 $image_info = get_image_infos($_GET['image_id']);
-$storage_cat_id = $image_info['storage_category_id'];
 
-// retrieve the name of the storage category of the photo
-$storage_cat_info = get_cat_info($storage_cat_id);
+if (!is_null($image_info))
+{
+  // this is a photo
+  $tabsheet->set_id('photo');
+
+  $storage_cat_id = $image_info['storage_category_id'];
+  $storage_cat_info = get_cat_info($storage_cat_id);
+
+  // set template items
+  $item_thumb = DerivativeImage::thumb_url($image_info);
+  $item_path  = $image_info['path'];
+  $header_text = 'EDIT_PHOTO';
+  $legend_text = 'MOVE_PHOTO';
+  $dir_text = 'CURR_FILE_LOC';
+}
+else
+{
+  // this is a physical album
+  $tabsheet->set_id('album');
+
+  $image_info = get_cat_info($_GET['image_id']);
+  $storage_cat_info = get_cat_info($_GET['image_id']);
+  $storage_cat_uppercats = explode(',', $storage_cat_info['uppercats']);
+  $storage_cat_path = get_fulldirs($storage_cat_uppercats);
+
+  // set template items
+  // TODO: get album representative
+  $item_thumb = DerivativeImage::thumb_url(0);
+  $item_path = $storage_cat_path[$_GET['image_id']];
+  $header_text = 'EDIT_ALBUM';
+  $legend_text = 'MOVE_ALBUM';
+  $dir_text = 'CURR_DIR_LOC';
+}
 
 // populate the selection scroll with physical albums
 ppm_list_physical_albums();
@@ -107,11 +135,18 @@ ppm_list_physical_albums();
 $template->assign(
   array(
     'TITLE' => render_element_name($image_info),
-    'TN_SRC' => DerivativeImage::thumb_url($image_info),
-    'current_path' => $image_info['path'],
+    'TN_SRC' => $item_thumb,
+    'current_path' => $item_path,
     'storage_category' => $storage_cat_info['name'],
+    'header_text' => $header_text,
+    'legend_text' => $legend_text,
+    'dir_text' => $dir_text,
     )
   );
+
+// finish tab setup now that tabsheet id is set (moved here from Tab section above)
+$tabsheet->select('ppm');
+$tabsheet->assign();
 
 // +-----------------------------------------------------------------------+
 // | sending html code                                                     |

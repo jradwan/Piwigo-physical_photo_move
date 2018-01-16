@@ -1,9 +1,12 @@
 <?php
 $lang['EDIT_PHOTO'] = 'Edit Photo';
+$lang['EDIT_ALBUM'] = 'Edit Album';
 $lang['MOVE_PHOTO'] = 'Move Photo';
+$lang['MOVE_ALBUM'] = 'Move Album';
 $lang['THUMBNAIL'] = 'Thumbnail';
 $lang['CURR_PHYS_ALBUM'] = 'Current physical album:';
 $lang['CURR_FILE_LOC'] = 'Current file location:';
+$lang['CURR_DIR_LOC'] = 'Current directory location:';
 $lang['TEST_MODE_DESCR'] = 'only perform a simulation (nothing will be changed in the file system or database)';
 $lang['DEST_ALBUM'] = 'Destination Album';
 $lang['DEST_ALBUM_HELP'] = 'Only other physical albums are listed. Use the \'Linked Albums\' field on the Properties tab to \'move\' this photo into a virtual album.';
