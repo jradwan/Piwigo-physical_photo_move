@@ -30,27 +30,33 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 include_once(PPM_PATH.'include/functions.inc.php');
 
+
 // +-----------------------------------------------------------------------+
-// | Check Access and exit when user status is not ok                      |
+// | Check access and exit when user status is not ok                      |
 // +-----------------------------------------------------------------------+
 
 check_status(ACCESS_ADMINISTRATOR);
+
 
 // +-----------------------------------------------------------------------+
 // | Basic checks                                                          |
 // +-----------------------------------------------------------------------+
 
 $_GET['image_id'] = $_GET['tab'];
+$_GET['cat_id'] = $_GET['tab'];
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
+check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
 
 $admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id'];
+$admin_album_base_url = get_root_url().'admin.php?page=album-'.$_GET['cat_id'];
+
 
 // +-----------------------------------------------------------------------+
 // | Process form                                                          |
 // +-----------------------------------------------------------------------+
 
-if (isset($_POST['move_photo']))
+if (isset($_POST['move_item']))
 {
 
   $ppm_test_mode = ppm_check_test_mode();
@@ -71,8 +77,9 @@ if (isset($_POST['move_photo']))
 
 } 
 
+
 // +-----------------------------------------------------------------------+
-// | Tab                                                                   |
+// | Tab setup                                                             |
 // +-----------------------------------------------------------------------+
 
 include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
@@ -80,10 +87,17 @@ include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 $page['tab'] = 'ppm';
 $tabsheet = new tabsheet();
 
-// ids are set below in template init (to determine photo vs album)
+// retrieve the item id and type
+$item_id = ($_GET['image_id']);
+$item_type = ppm_check_item_type($item_id);
+
+$tabsheet->set_id($item_type);
+$tabsheet->select('ppm');
+$tabsheet->assign();
+
 
 // +-----------------------------------------------------------------------+
-// |                             template init                             |
+// | Template init                                                         |
 // +-----------------------------------------------------------------------+
 
 $template->set_filenames(
@@ -92,14 +106,9 @@ $template->set_filenames(
     )
   );
 
-// retrieve the album (category) id
-$image_info = get_image_infos($_GET['image_id']);
-
-if (!is_null($image_info))
+if ($item_type == 'photo')
 {
-  // this is a photo
-  $tabsheet->set_id('photo');
-
+  $image_info = get_image_infos($item_id);
   $storage_cat_id = $image_info['storage_category_id'];
   $storage_cat_info = get_cat_info($storage_cat_id);
 
@@ -110,23 +119,27 @@ if (!is_null($image_info))
   $legend_text = 'MOVE_PHOTO';
   $dir_text = 'CURR_FILE_LOC';
 }
-else
+elseif ($item_type == 'album')
 {
-  // this is a physical album
-  $tabsheet->set_id('album');
-
-  $image_info = get_cat_info($_GET['image_id']);
-  $storage_cat_info = get_cat_info($_GET['image_id']);
+  $image_info = get_cat_info($item_id);
+  $storage_cat_info = get_cat_info($item_id);
   $storage_cat_uppercats = explode(',', $storage_cat_info['uppercats']);
   $storage_cat_path = get_fulldirs($storage_cat_uppercats);
 
   // set template items
   // TODO: get album representative
   $item_thumb = DerivativeImage::thumb_url(0);
-  $item_path = $storage_cat_path[$_GET['image_id']];
+  $item_path = $storage_cat_path[$item_id];
   $header_text = 'EDIT_ALBUM';
   $legend_text = 'MOVE_ALBUM';
   $dir_text = 'CURR_DIR_LOC';
+}
+else
+{
+  array_push(
+    $page['messages'],
+    l10n('MSG_NO_TYPE')
+    );
 }
 
 // populate the selection scroll with physical albums
@@ -144,12 +157,9 @@ $template->assign(
     )
   );
 
-// finish tab setup now that tabsheet id is set (moved here from Tab section above)
-$tabsheet->select('ppm');
-$tabsheet->assign();
 
 // +-----------------------------------------------------------------------+
-// | sending html code                                                     |
+// | Send HTML code                                                        |
 // +-----------------------------------------------------------------------+
 
 $template->assign_var_from_handle('ADMIN_CONTENT', 'plugin_admin_content');

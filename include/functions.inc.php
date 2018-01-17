@@ -20,6 +20,7 @@ function ppm_check_test_mode()
   }
 }
 
+
 // return list of categories that are actual physical albums
 function ppm_list_physical_albums()
 {
@@ -36,10 +37,66 @@ function ppm_list_physical_albums()
   display_select_cat_wrapper($query, $cat_selected, 'categories', false);
 }
 
-// process move of item to destination category
+
+// determine if an item is a photo or album
+function ppm_check_item_type($item_id)
+{
+  $item_type = 'none';
+  $item_info = get_image_infos($item_id);
+
+  if (!is_null($item_info))
+  {
+    // this is a photo
+    $item_type = 'photo';
+  }
+  else
+  {
+    // this is a physical album
+    $item_type = 'album';
+  }
+  return $item_type;
+}
+
+
+// move an item by calling the proper procedure for the item type
 function ppm_move_item($target_cat, $id, $ppm_test_mode)
 {
+  global $page;
 
+  $item_type = ppm_check_item_type($id);
+
+  // build debugging messages (for test mode)
+  if ($ppm_test_mode)
+  {
+    $debug_line_1  = l10n('DBG_PROCESSING').' '.$item_type;
+
+    array_push(
+      $page['messages'],
+      sprintf($debug_line_1)
+      );
+  }
+
+  if ($item_type == 'photo')
+  {
+    ppm_move_photo($target_cat, $id, $ppm_test_mode);
+  }
+  elseif ($item_type == 'album')
+  {
+    ppm_move_album($target_cat, $id, $ppm_test_mode);
+  }
+  else
+  {
+    array_push(
+      $page['messages'],
+      l10n('MSG_NO_TYPE')
+      );
+  } 
+}
+
+
+// process move of photo to destination category
+function ppm_move_photo($target_cat, $id, $ppm_test_mode)
+{
   global $page;
 
   // retrieve information about current photo
@@ -101,7 +158,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 
       array_push(
         $page['warnings'],
-          sprintf($rename_msg)
+        sprintf($rename_msg)
         );
     }
     else
@@ -317,10 +374,17 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
   } // move file
 }
 
+
 // process move of album to destination
 function ppm_move_album($target_cat, $id, $ppm_test_mode)
 {
+  global $page;
 
-} // move album
+  array_push(
+    $page['infos'],
+    sprintf('ppm_move_album')
+    );
+
+} 
 
 ?>
