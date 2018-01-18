@@ -109,12 +109,12 @@ $template->set_filenames(
 if ($item_type == 'photo')
 {
   $image_info = get_image_infos($item_id);
-  $storage_cat_id = $image_info['storage_category_id'];
-  $storage_cat_info = get_cat_info($storage_cat_id);
+  $storage_cat_info = get_cat_info($image_info['storage_category_id']);
+  $storage_cat_path = $image_info['path'];
 
   // set template items
   $item_thumb = DerivativeImage::thumb_url($image_info);
-  $item_path  = $image_info['path'];
+  $item_path  = $storage_cat_path;
   $header_text = 'EDIT_PHOTO';
   $legend_text = 'MOVE_PHOTO';
   $dir_text = 'CURR_FILE_LOC';
@@ -123,13 +123,11 @@ if ($item_type == 'photo')
 elseif ($item_type == 'album')
 {
   $image_info = get_cat_info($item_id);
-  $storage_cat_info = get_cat_info($item_id);
-  $storage_cat_uppercats = explode(',', $storage_cat_info['uppercats']);
-  $storage_cat_path = get_fulldirs($storage_cat_uppercats);
+  $storage_cat_info = $image_info;
+  $storage_cat_path = get_fulldirs(explode(',', $image_info['uppercats']));
 
   // set template items
-  // TODO: get album representative
-  $item_thumb = DerivativeImage::thumb_url(0);
+  $item_thumb = DerivativeImage::thumb_url(get_image_infos($storage_cat_info['representative_picture_id']));
   $item_path = $storage_cat_path[$item_id];
   $header_text = 'EDIT_ALBUM';
   $legend_text = 'MOVE_ALBUM';
