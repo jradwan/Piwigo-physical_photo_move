@@ -20,7 +20,7 @@
   <fieldset>
     <legend>
       {'DEST_ALBUM'|@translate}
-      <a class="icon-help-circled" title="{'DEST_ALBUM_HELP'|@translate}"></a>
+      <a class="icon-help-circled" title="{{$help_text}|@translate}"></a>
     </legend>
     <select class="categoryList" name="cat_id" size="10">
       {html_options options=$categories selected=$categories_selected}

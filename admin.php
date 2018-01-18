@@ -118,6 +118,7 @@ if ($item_type == 'photo')
   $header_text = 'EDIT_PHOTO';
   $legend_text = 'MOVE_PHOTO';
   $dir_text = 'CURR_FILE_LOC';
+  $help_text = 'DEST_ALBUM_HELP';
 }
 elseif ($item_type == 'album')
 {
@@ -133,6 +134,7 @@ elseif ($item_type == 'album')
   $header_text = 'EDIT_ALBUM';
   $legend_text = 'MOVE_ALBUM';
   $dir_text = 'CURR_DIR_LOC';
+  $help_text = 'DEST_ALBUM_HELP_2';
 }
 else
 {
@@ -154,6 +156,7 @@ $template->assign(
     'header_text' => $header_text,
     'legend_text' => $legend_text,
     'dir_text' => $dir_text,
+    'help_text' => $help_text,
     )
   );
 
