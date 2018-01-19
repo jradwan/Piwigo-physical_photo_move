@@ -111,6 +111,7 @@ if ($item_type == 'photo')
   $image_info = get_image_infos($item_id);
   $storage_cat_info = get_cat_info($image_info['storage_category_id']);
   $storage_cat_path = $image_info['path'];
+  $storage_cat_nav = get_cat_display_name($storage_cat_info['upper_names']);
 
   // set template items
   $item_thumb = DerivativeImage::thumb_url($image_info);
@@ -125,6 +126,7 @@ elseif ($item_type == 'album')
   $image_info = get_cat_info($item_id);
   $storage_cat_info = $image_info;
   $storage_cat_path = get_fulldirs(explode(',', $image_info['uppercats']));
+  $storage_cat_nav = get_cat_display_name($storage_cat_info['upper_names']);
 
   // set template items
   $item_thumb = DerivativeImage::thumb_url(get_image_infos($storage_cat_info['representative_picture_id']));
@@ -150,7 +152,7 @@ $template->assign(
     'TITLE' => render_element_name($image_info),
     'TN_SRC' => $item_thumb,
     'current_path' => $item_path,
-    'storage_category' => $storage_cat_info['name'],
+    'storage_category' => $storage_cat_nav,
     'header_text' => $header_text,
     'legend_text' => $legend_text,
     'dir_text' => $dir_text,
