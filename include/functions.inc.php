@@ -382,7 +382,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     else // an error occurred during the file move
     {
       // build file move error message
-      $error_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_ERR');
+      $error_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
 
       array_push(
         $page['errors'],
@@ -403,12 +403,6 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
   $source_cat_name = $source_cat_info['name'];
   $source_dir = get_fulldirs(explode(',', $source_cat_info['uppercats']))[$id];
 
-  // DEBUG messaging
-  array_push(
-    $page['messages'],
-    sprintf('Source directory: '.$source_dir)
-    );
-
   // no move necessary (same category selected)
   // (this SHOULD never happen since the current category is excluded from the list)
   if ($target_cat == $id)
@@ -427,14 +421,64 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
     $dest_cat_info = get_cat_info($target_cat);
     $dest_cat_name = $dest_cat_info['name'];
     $dest_cat_path = get_fulldirs(explode(',',  $dest_cat_info['uppercats']))[$target_cat];
-    $dest_cat_exists = false;
+    $dest_cat_path_final = $dest_cat_path.'/'.$source_cat_info['dir'];
 
-    // DEBUG messaging
-    array_push(
-      $page['messages'],
-      sprintf('Destination directory: '.$dest_cat_path)
-      );
-  }
+    // check to see if directory already exists in destination 
+    // (this can happen if the parent directory of the current category is selected)
+    if (file_exists($dest_cat_path_final))
+    {
+      $error_msg = $dest_cat_path_final.': '.l10n('MSG_ALBUM_EXISTS_ERR');
+
+      array_push(
+        $page['errors'],
+        sprintf($error_msg)
+        );
+    }
+    else
+    {
+      // build debugging messages (for test mode)
+      if ($ppm_test_mode)
+      {
+        // build debug strings
+        $debug_line_1  = l10n('DBG_SRC').' '.$source_dir;
+        $debug_line_2  = l10n('DBG_DEST').' '.$dest_cat_path_final;
+
+        array_push(
+          $page['messages'],
+          sprintf($debug_line_1),
+          sprintf($debug_line_2)
+          );
+      }  
+
+      // move the directory
+      $move_status_ok = true;
+      if (!$ppm_test_mode)
+      {
+        $move_status_ok = rename($source_dir, $dest_cat_path_final);
+        @chmod($dest_cat_path_final, 0644);
+      }
+
+      if ($move_status_ok)
+      {
+        // make the database changes associated with the move 
+        if (!$ppm_test_mode)
+        {
+          // database change code goes here
+
+        } // end check for test mode
+      }
+      else // an error occurred during the directory move
+      {
+        // build directory move error message
+        $error_msg = $dest_cat_path_final.': '.l10n('MSG_DIR_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
+
+        array_push(
+          $page['errors'],
+          sprintf($error_msg)
+          );
+      }
+    }  // move album
+  } // end check for no work
 } 
 
 ?>
