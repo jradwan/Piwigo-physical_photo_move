@@ -359,7 +359,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
         if ($move_status_ok)
         {
           // build success message
-          $success_msg = $dest_file_name.': '.l10n('MSG_SUCCESS').$dest_cat_name.'.';
+          $success_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_SUCCESS').$dest_cat_name.'.';
 
           array_push(
             $page['infos'],
@@ -463,8 +463,33 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
         // make the database changes associated with the move 
         if (!$ppm_test_mode)
         {
-          // database change code goes here
+          // update parent album (id_uppercat), and album path (uppercats) on the
+          // categories table
+          single_update(
+            CATEGORIES_TABLE,
+            array(
+              'id_uppercat' => $target_cat,
+              'uppercats' => $dest_cat_info['uppercats'].','.$id
+            ),
+            array('id' => $id)
+            );
 
+          // update album path (uppercats) for any sub-albums on the 
+          // categories table
+          $query = '
+          UPDATE '.CATEGORIES_TABLE.'
+            SET uppercats = replace(uppercats,\''.$source_cat_info['uppercats'].'\',\''.$dest_cat_info['uppercats'].','.$id.'\')
+            WHERE id_uppercat = '.$id.'
+            ;';
+          pwg_query($query);
+
+          // build success message
+          $success_msg = $source_dir.': '.l10n('MSG_DIR_MOVE_SUCCESS').$dest_cat_path_final.'.';
+
+          array_push(
+            $page['infos'],
+            sprintf($success_msg)
+            );
         } // end check for test mode
       }
       else // an error occurred during the directory move
