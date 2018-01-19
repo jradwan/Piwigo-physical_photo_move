@@ -38,6 +38,25 @@ function ppm_list_physical_albums()
 }
 
 
+// return list of categories that are actual physical albums,
+// excluding the current album and its sub-categories
+function ppm_list_physical_albums_no_subcats($id)
+{
+  $query = '
+  SELECT
+      id,
+      name,
+      uppercats,
+      global_rank
+    FROM '.CATEGORIES_TABLE. '
+    WHERE dir IS NOT NULL
+    and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
+  ;';
+  $cat_selected = 0;
+  display_select_cat_wrapper($query, $cat_selected, 'categories', false);
+}
+
+
 // determine if an item is a photo or album
 function ppm_check_item_type($item_id)
 {
@@ -76,21 +95,20 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
       );
   }
 
-  if ($item_type == 'photo')
-  {
-    ppm_move_photo($target_cat, $id, $ppm_test_mode);
+  // call the corresponding move function for the item type
+  switch ($item_type) {
+    case 'photo':
+      ppm_move_photo($target_cat, $id, $ppm_test_mode);
+      break;
+    case 'album':
+      ppm_move_album($target_cat, $id, $ppm_test_mode);
+      break;
+    default:
+      array_push(
+        $page['messages'],
+        l10n('MSG_NO_TYPE')
+        );
   }
-  elseif ($item_type == 'album')
-  {
-    ppm_move_album($target_cat, $id, $ppm_test_mode);
-  }
-  else
-  {
-    array_push(
-      $page['messages'],
-      l10n('MSG_NO_TYPE')
-      );
-  } 
 }
 
 
@@ -380,11 +398,43 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
 {
   global $page;
 
+  // retrieve information about current category
+  $source_cat_info = get_cat_info($id);
+  $source_cat_name = $source_cat_info['name'];
+  $source_dir = get_fulldirs(explode(',', $source_cat_info['uppercats']))[$id];
+
+  // DEBUG messaging
   array_push(
-    $page['infos'],
-    sprintf('ppm_move_album')
+    $page['messages'],
+    sprintf('Source directory: '.$source_dir)
     );
 
+  // no move necessary (same category selected)
+  // (this SHOULD never happen since the current category is excluded from the list)
+  if ($target_cat == $id)
+  {
+    // build no work message
+    $no_work_msg = l10n('MSG_NO_WORK_1').' - '.l10n('MSG_NO_WORK_2');
+
+    array_push(
+      $page['messages'],
+      sprintf($no_work_msg)
+      );
+  }
+  else
+  {
+    // get destination category information
+    $dest_cat_info = get_cat_info($target_cat);
+    $dest_cat_name = $dest_cat_info['name'];
+    $dest_cat_path = get_fulldirs(explode(',',  $dest_cat_info['uppercats']))[$target_cat];
+    $dest_cat_exists = false;
+
+    // DEBUG messaging
+    array_push(
+      $page['messages'],
+      sprintf('Destination directory: '.$dest_cat_path)
+      );
+  }
 } 
 
 ?>

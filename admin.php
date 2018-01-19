@@ -120,6 +120,9 @@ if ($item_type == 'photo')
   $legend_text = 'MOVE_PHOTO';
   $dir_text = 'CURR_FILE_LOC';
   $help_text = 'DEST_ALBUM_HELP';
+
+  // populate the selection scroll with physical albums
+  ppm_list_physical_albums();
 }
 elseif ($item_type == 'album')
 {
@@ -135,6 +138,10 @@ elseif ($item_type == 'album')
   $legend_text = 'MOVE_ALBUM';
   $dir_text = 'CURR_DIR_LOC';
   $help_text = 'DEST_ALBUM_HELP_2';
+
+  // populate the selection scroll with physical albums
+  // except the current album and its sub-albums
+  ppm_list_physical_albums_no_subcats($item_id);
 }
 else
 {
@@ -143,9 +150,6 @@ else
     l10n('MSG_NO_TYPE')
     );
 }
-
-// populate the selection scroll with physical albums
-ppm_list_physical_albums();
 
 $template->assign(
   array(
