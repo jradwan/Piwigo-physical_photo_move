@@ -10,11 +10,15 @@ PPM (Physical Photo Move) is an attempt to alleviate this inconvenience by allow
 
 After activating the plugin for your Piwigo site, there will be a "Move" tab in the "Edit" area for any item that is located in a physical album.
 
-![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui.jpg)
- 
-Select a destination album (only other physical albums are shown). When moving an album, that album and its sub-albums are hidden from the list (preventing you from moving a parent folder into itself or one its children). Click "Move." With the simulation checkbox on, only informational messages are displayed (the item is not moved and the database is not updated). 
+### Moving a Photo (or Video)
 
-![debug screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-debug-info.jpg)
+Select a destination album (only other physical albums are shown).
+
+![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui-file.jpg)
+
+Click "Move." With the simulation checkbox on, only informational messages are displayed (the item is not moved and the database is not updated). 
+
+![debug screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-debug-info-file.jpg)
 
 If everything in the source and destination looks good, turn off the simulation checkbox, select the destination album again, and click "Move" to move the item.
 
@@ -24,21 +28,37 @@ If an item with the same name already exists in the destination, the source file
 
 ![file renamed](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-rename.jpg)
 
-If a folder (directory) with the same name already exists in the destination (i.e., you selected the parent of the current album), the move will be aborted:
-
-![folder_move_error](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-folder-error.jpg)
-
 Only the stored album (i.e., the folder location on disk) is changed, along with the corresponding information in the database. Any virtual albums linked to the photo will be unchanged. This includes any physical albums that the photo is associated with "virtually" but not physically stored in (linked albums). If the photo is being moved to a physical album that it is already linked to (see issue [#3](https://github.com/jradwan/Piwigo-physical_photo_move/issues/3)), a message will be displayed indicating the virtual link has been removed:
 
 ![merge](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-virtual-merge.jpg)
 
 All previously generated representatives (thumbnails for non-image files) and derivates (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
 
+### Moving an Album
+
+Select a destination album (only other physical albums are shown). When moving an album, that album and its sub-albums are hidden from the list (preventing you from moving a parent folder into itself or one its children).
+
+![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui-folder.jpg)
+
+Click "Move." With the simulation checkbox on, only informational messages are displayed (the folder is not moved and the database is not updated). 
+
+![debug screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-debug-info-folder.jpg)
+
+If everything in the source and destination looks good, turn off the simulation checkbox, select the destination album again, and click "Move" to move the album.
+
+![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-album-moved.jpg)
+
+If a folder (directory) with the same name already exists in the destination (i.e., you selected the parent of the current album), the move will be aborted:
+
+![folder_move_error](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-folder-error.jpg)
+
+### Using Batch Manager
+
 PPM also supports Piwigo's Batch Manager for moving multiple items at a time. In global mode, select the "Move to physical album" action to show the destination album list:
 
 ![batch_mode](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-batch-ui.jpg)
 
-Follow the same instructions above to batch move the items to the selected destination album. Multiple messages will be displayed showing the status of each file:
+Follow the same instructions as above to batch move the items to the selected destination album. Multiple messages will be displayed showing the status of each file:
 
 ![batch_debug](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-batch-debug-info.jpg)
 
