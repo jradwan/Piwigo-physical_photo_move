@@ -22,7 +22,7 @@ Click "Move." With the simulation checkbox on, only informational messages are d
 
 If everything in the source and destination looks good, turn off the simulation checkbox, select the destination album again, and click "Move" to move the item.
 
-![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved.jpg)
+![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved-file.jpg)
 
 If an item with the same name already exists in the destination, the source file will be renamed before it is moved and an informational message will be displayed:
 
@@ -46,7 +46,7 @@ Click "Move." With the simulation checkbox on, only informational messages are d
 
 If everything in the source and destination looks good, turn off the simulation checkbox, select the destination album again, and click "Move" to move the album.
 
-![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-album-moved.jpg)
+![move successful](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-moved-folder.jpg)
 
 If a folder (directory) with the same name already exists in the destination (i.e., you selected the parent of the current album), the move will be aborted:
 
