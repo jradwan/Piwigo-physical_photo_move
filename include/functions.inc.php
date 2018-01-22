@@ -463,25 +463,49 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
         // make the database changes associated with the move 
         if (!$ppm_test_mode)
         {
-          // update parent album (id_uppercat), and album path (uppercats) on the
-          // categories table
+          // update parent album (id_uppercat) on the categories table
           single_update(
             CATEGORIES_TABLE,
             array(
-              'id_uppercat' => $target_cat,
-              'uppercats' => $dest_cat_info['uppercats'].','.$id
+              'id_uppercat' => $target_cat
             ),
             array('id' => $id)
             );
 
-          // update album path (uppercats) for any sub-albums on the 
-          // categories table
+          // update uppercats (album path) for the album move
+          update_uppercats();
+
+          // update global ranks (categories menu) to reflect album move
+          update_global_rank();
+
+          // update the image paths for items in the moved album (and sub-albums)
+          // based this on the update_path() function in admin/include/functions.php
+          // except instead of updating ALL the paths on the images table, it only
+          // updates images in the affected categories
           $query = '
-          UPDATE '.CATEGORIES_TABLE.'
-            SET uppercats = replace(uppercats,\''.$source_cat_info['uppercats'].'\',\''.$dest_cat_info['uppercats'].','.$id.'\')
-            WHERE id_uppercat = '.$id.'
+            SELECT DISTINCT(storage_category_id)
+            FROM '.IMAGES_TABLE.'
+            WHERE storage_category_id IS NOT NULL
+            AND storage_category_id in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
             ;';
-          pwg_query($query);
+          $cat_ids = query2array($query, null, 'storage_category_id');
+          $fulldirs = get_fulldirs($cat_ids);
+
+          foreach ($cat_ids as $cat_id)
+          {
+            $query = '
+              UPDATE '.IMAGES_TABLE.'
+              SET path = '.pwg_db_concat(array("'".$fulldirs[$cat_id]."/'",'file')).'
+              WHERE storage_category_id = '.$cat_id.'
+              ;';
+            pwg_query($query);
+          }
+
+          // ** TODO
+          // delete orphaned thumbnails (or move them)
+
+          // invalidate user cache (album/photo counts, etc.) to reflect the album move
+          invalidate_user_cache();
 
           // build success message
           $success_msg = $source_dir.': '.l10n('MSG_DIR_MOVE_SUCCESS').$dest_cat_path_final.'.';
