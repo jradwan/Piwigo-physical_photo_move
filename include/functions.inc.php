@@ -449,28 +449,34 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
           sprintf($debug_line_2)
           );
       }  
-
-      // move the directory
-      $move_status_ok = true;
-      if (!$ppm_test_mode)
+      else
       {
+        $move_status_ok = true;
+       
+        // move the directory
         $move_status_ok = rename($source_dir, $dest_cat_path_final);
-        @chmod($dest_cat_path_final, 0644);
-      }
+        @ppm_chmod_r($dest_cat_path_final);
 
-      if ($move_status_ok)
-      {
-        // make the database changes associated with the move 
-        if (!$ppm_test_mode)
+        if ($move_status_ok) 
+        {
+          //move the derivatives (thumbnails, resizes, etc.)
+          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir;
+          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_final;
+          $move_status_ok = rename($source_derivatives, $dest_derivatives);
+          @ppm_chmod_r($dest_derivatives);
+        }
+
+        // make the database changes associated with the move
+        if ($move_status_ok)
         {
           // update parent album (id_uppercat) on the categories table
           single_update(
             CATEGORIES_TABLE,
             array(
               'id_uppercat' => $target_cat
-            ),
+              ),
             array('id' => $id)
-            );
+          );
 
           // update uppercats (album path) for the album move
           update_uppercats();
@@ -478,8 +484,8 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
           // update global ranks (categories menu) to reflect album move
           update_global_rank();
 
-          // update the image paths for items in the moved album (and sub-albums)
-          // based this on the update_path() function in admin/include/functions.php
+          // update the image paths for items in the moved album (and sub-albums).
+          // this is based on the update_path() function in admin/include/functions.php
           // except instead of updating ALL the paths on the images table, it only
           // updates images in the affected categories
           $query = '
@@ -501,9 +507,6 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
             pwg_query($query);
           }
 
-          // ** TODO
-          // delete orphaned thumbnails (or move them)
-
           // invalidate user cache (album/photo counts, etc.) to reflect the album move
           invalidate_user_cache();
 
@@ -514,20 +517,37 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
             $page['infos'],
             sprintf($success_msg)
             );
-        } // end check for test mode
-      }
-      else // an error occurred during the directory move
-      {
-        // build directory move error message
-        $error_msg = $dest_cat_path_final.': '.l10n('MSG_DIR_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
+        } // end database changes
+        else // an error occurred during the file system moves
+        {
+          // build directory move error message
+          $error_msg = $dest_cat_path_final.': '.l10n('MSG_DIR_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
 
-        array_push(
-          $page['errors'],
-          sprintf($error_msg)
-          );
-      }
-    }  // move album
+          array_push(
+            $page['errors'],
+            sprintf($error_msg)
+            );
+        }
+
+      }  // move album
+    } 
   } // end check for no work
 } 
+
+
+// recursively set 0644 permissions on a path
+function ppm_chmod_r($path) 
+{
+  $dir = new DirectoryIterator($path);
+
+  foreach ($dir as $item)
+  {
+    @chmod($item->getPathname(), 0644);
+    if ($item->isDir() && !$item->isDot()) 
+    {
+      @ppm_chmod_r($item->getPathname());
+    }
+  }
+}
 
 ?>
