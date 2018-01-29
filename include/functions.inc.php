@@ -62,7 +62,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 {
   global $page;
 
-  $item_type = ppm_check_item_type($id);
+  $item_type = $_GET['ppm_type'];
 
   // build debugging messages (for test mode)
   if ($ppm_test_mode)
