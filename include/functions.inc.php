@@ -57,26 +57,6 @@ function ppm_list_physical_albums_no_subcats($id)
 }
 
 
-// determine if an item is a photo or album
-function ppm_check_item_type($item_id)
-{
-  $item_type = 'none';
-  $item_info = get_image_infos($item_id);
-
-  if (!is_null($item_info))
-  {
-    // this is a photo
-    $item_type = 'photo';
-  }
-  else
-  {
-    // this is a physical album
-    $item_type = 'album';
-  }
-  return $item_type;
-}
-
-
 // move an item by calling the proper procedure for the item type
 function ppm_move_item($target_cat, $id, $ppm_test_mode)
 {

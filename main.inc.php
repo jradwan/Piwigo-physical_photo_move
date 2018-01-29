@@ -34,7 +34,7 @@ function ppm_add_tab($sheets, $id)
 
     $sheets['ppm'] = array(
       'caption' => l10n('MOVE_BUTTON'),
-      'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['image_id'],
+      'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['image_id'].'&ppm_type='.$id,
       );
   }
 
@@ -51,7 +51,7 @@ function ppm_add_tab($sheets, $id)
 
     $sheets['ppm'] = array(
       'caption' => l10n('MOVE_BUTTON'),
-      'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['cat_id'],
+      'url' => get_root_url().'admin.php?page=plugin-physical_photo_move-'.$_GET['cat_id'].'&ppm_type='.$id,
       );
   }
   

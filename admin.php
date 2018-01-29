@@ -47,6 +47,7 @@ $_GET['cat_id'] = $_GET['tab'];
 
 check_input_parameter('image_id', $_GET, false, PATTERN_ID);
 check_input_parameter('cat_id', $_GET, false, PATTERN_ID);
+check_input_parameter('ppm_type', $_GET, false, '/^(photo|album)$/');
 
 $admin_photo_base_url = get_root_url().'admin.php?page=photo-'.$_GET['image_id'];
 $admin_album_base_url = get_root_url().'admin.php?page=album-'.$_GET['cat_id'];
@@ -86,12 +87,8 @@ include_once(PHPWG_ROOT_PATH.'admin/include/tabsheet.class.php');
 
 $page['tab'] = 'ppm';
 $tabsheet = new tabsheet();
-
-// retrieve the item id and type
 $item_id = ($_GET['image_id']);
-$item_type = ppm_check_item_type($item_id);
-
-$tabsheet->set_id($item_type);
+$tabsheet->set_id($_GET['ppm_type']);
 $tabsheet->select('ppm');
 $tabsheet->assign();
 
@@ -106,7 +103,7 @@ $template->set_filenames(
     )
   );
 
-if ($item_type == 'photo')
+if ($_GET['ppm_type'] == 'photo')
 {
   $image_info = get_image_infos($item_id);
   $storage_cat_info = get_cat_info($image_info['storage_category_id']);
@@ -124,7 +121,7 @@ if ($item_type == 'photo')
   // populate the selection scroll with physical albums
   ppm_list_physical_albums();
 }
-elseif ($item_type == 'album')
+elseif ($_GET['ppm_type'] == 'album')
 {
   $image_info = get_cat_info($item_id);
   $storage_cat_info = $image_info;
