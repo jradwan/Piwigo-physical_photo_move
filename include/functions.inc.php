@@ -20,6 +20,7 @@ function ppm_check_test_mode()
   }
 }
 
+
 // return list of categories that are actual physical albums
 function ppm_list_physical_albums()
 {
@@ -36,10 +37,62 @@ function ppm_list_physical_albums()
   display_select_cat_wrapper($query, $cat_selected, 'categories', false);
 }
 
-// process move of item to destination category
-function ppm_move_item($target_cat, $id, $ppm_test_mode)
-{
 
+// return list of categories that are actual physical albums,
+// excluding the current album and its sub-categories
+function ppm_list_physical_albums_no_subcats($id)
+{
+  $query = '
+  SELECT
+      id,
+      name,
+      uppercats,
+      global_rank
+    FROM '.CATEGORIES_TABLE. '
+    WHERE dir IS NOT NULL
+    and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
+  ;';
+  $cat_selected = 0;
+  display_select_cat_wrapper($query, $cat_selected, 'categories', false);
+}
+
+
+// move an item by calling the proper procedure for the item type
+function ppm_move_item($target_cat, $id, $ppm_test_mode, $item_type)
+{
+  global $page;
+
+  // build debugging messages (for test mode)
+  if ($ppm_test_mode)
+  {
+    $debug_line_1  = l10n('DBG_PROCESSING').' '.$item_type;
+
+    array_push(
+      $page['messages'],
+      sprintf($debug_line_1)
+      );
+  }
+
+  // call the corresponding move function for the item type
+  switch ($item_type) {
+    case 'photo':
+      ppm_move_photo($target_cat, $id, $ppm_test_mode);
+      break;
+    case 'album':
+      ppm_move_album($target_cat, $id, $ppm_test_mode);
+      break;
+    default:
+      array_push(
+        $page['messages'],
+        l10n('MSG_NO_TYPE')
+        );
+  }
+}
+
+
+// process move of photo to destination category
+function ppm_move_photo($target_cat, $id, $ppm_test_mode)
+{
   global $page;
 
   // retrieve information about current photo
@@ -101,7 +154,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
 
       array_push(
         $page['warnings'],
-          sprintf($rename_msg)
+        sprintf($rename_msg)
         );
     }
     else
@@ -284,7 +337,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         if ($move_status_ok)
         {
           // build success message
-          $success_msg = $dest_file_name.': '.l10n('MSG_SUCCESS').$dest_cat_name.'.';
+          $success_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_SUCCESS').$dest_cat_name.'.';
 
           array_push(
             $page['infos'],
@@ -307,7 +360,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
     else // an error occurred during the file move
     {
       // build file move error message
-      $error_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_ERR');
+      $error_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
 
       array_push(
         $page['errors'],
@@ -315,6 +368,164 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode)
         );
     }
   } // move file
+}
+
+
+// process move of album to destination
+function ppm_move_album($target_cat, $id, $ppm_test_mode)
+{
+  global $page;
+
+  // retrieve information about current category
+  $source_cat_info = get_cat_info($id);
+  $source_cat_name = $source_cat_info['name'];
+  $source_dir = get_fulldirs(explode(',', $source_cat_info['uppercats']))[$id];
+
+  // no move necessary (same category selected)
+  // (this SHOULD never happen since the current category is excluded from the list)
+  if ($target_cat == $id)
+  {
+    // build no work message
+    $no_work_msg = l10n('MSG_NO_WORK_1').' - '.l10n('MSG_NO_WORK_2');
+
+    array_push(
+      $page['messages'],
+      sprintf($no_work_msg)
+      );
+  }
+  else
+  {
+    // get destination category information
+    $dest_cat_info = get_cat_info($target_cat);
+    $dest_cat_name = $dest_cat_info['name'];
+    $dest_cat_path = get_fulldirs(explode(',',  $dest_cat_info['uppercats']))[$target_cat];
+    $dest_cat_path_final = $dest_cat_path.'/'.$source_cat_info['dir'];
+
+    // check to see if directory already exists in destination 
+    // (this can happen if the parent directory of the current category is selected)
+    if (file_exists($dest_cat_path_final))
+    {
+      $error_msg = $dest_cat_path_final.': '.l10n('MSG_ALBUM_EXISTS_ERR');
+
+      array_push(
+        $page['errors'],
+        sprintf($error_msg)
+        );
+    }
+    else
+    {
+      // build debugging messages (for test mode)
+      if ($ppm_test_mode)
+      {
+        // build debug strings
+        $debug_line_1  = l10n('DBG_SRC').' '.$source_dir;
+        $debug_line_2  = l10n('DBG_DEST').' '.$dest_cat_path_final;
+
+        array_push(
+          $page['messages'],
+          sprintf($debug_line_1),
+          sprintf($debug_line_2)
+          );
+      }  
+      else
+      {
+        $move_status_ok = true;
+       
+        // move the directory
+        $move_status_ok = rename($source_dir, $dest_cat_path_final);
+        @ppm_chmod_r($dest_cat_path_final);
+
+        if ($move_status_ok) 
+        {
+          //move the derivatives (thumbnails, resizes, etc.)
+          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir;
+          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_final;
+          $move_status_ok = rename($source_derivatives, $dest_derivatives);
+          @ppm_chmod_r($dest_derivatives);
+        }
+
+        // make the database changes associated with the move
+        if ($move_status_ok)
+        {
+          // update parent album (id_uppercat) on the categories table
+          single_update(
+            CATEGORIES_TABLE,
+            array(
+              'id_uppercat' => $target_cat
+              ),
+            array('id' => $id)
+          );
+
+          // update uppercats (album path) for the album move
+          update_uppercats();
+
+          // update global ranks (categories menu) to reflect album move
+          update_global_rank();
+
+          // update the image paths for items in the moved album (and sub-albums).
+          // this is based on the update_path() function in admin/include/functions.php
+          // except instead of updating ALL the paths on the images table, it only
+          // updates images in the affected categories
+          $query = '
+            SELECT DISTINCT(storage_category_id)
+            FROM '.IMAGES_TABLE.'
+            WHERE storage_category_id IS NOT NULL
+            AND storage_category_id in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
+            ;';
+          $cat_ids = query2array($query, null, 'storage_category_id');
+          $fulldirs = get_fulldirs($cat_ids);
+
+          foreach ($cat_ids as $cat_id)
+          {
+            $query = '
+              UPDATE '.IMAGES_TABLE.'
+              SET path = '.pwg_db_concat(array("'".$fulldirs[$cat_id]."/'",'file')).'
+              WHERE storage_category_id = '.$cat_id.'
+              ;';
+            pwg_query($query);
+          }
+
+          // invalidate user cache (album/photo counts, etc.) to reflect the album move
+          invalidate_user_cache();
+
+          // build success message
+          $success_msg = $source_dir.': '.l10n('MSG_DIR_MOVE_SUCCESS').$dest_cat_path_final.'.';
+
+          array_push(
+            $page['infos'],
+            sprintf($success_msg)
+            );
+        } // end database changes
+        else // an error occurred during the file system moves
+        {
+          // build directory move error message
+          $error_msg = $dest_cat_path_final.': '.l10n('MSG_DIR_MOVE_ERR').' '.l10n('MSG_CHECK_LOG');
+
+          array_push(
+            $page['errors'],
+            sprintf($error_msg)
+            );
+        }
+
+      }  // move album
+    } 
+  } // end check for no work
+} 
+
+
+// recursively set 0644 permissions on a path
+function ppm_chmod_r($path) 
+{
+  $dir = new DirectoryIterator($path);
+
+  foreach ($dir as $item)
+  {
+    @chmod($item->getPathname(), 0644);
+    if ($item->isDir() && !$item->isDot()) 
+    {
+      @ppm_chmod_r($item->getPathname());
+    }
+  }
 }
 
 ?>

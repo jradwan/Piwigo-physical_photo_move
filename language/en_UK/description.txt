@@ -1,1 +1,1 @@
-Move a photo (the actual file) from one physical album to another, preserving all metadata.
+Move a photo, video, or album from one physical album to another, preserving all metadata.

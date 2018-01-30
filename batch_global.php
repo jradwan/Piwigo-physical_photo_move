@@ -2,7 +2,7 @@
 // +-----------------------------------------------------------------------+
 // | Piwigo - a PHP based picture gallery                                  |
 // +-----------------------------------------------------------------------+
-// | Copyright(C) 2008-2017 Piwigo Team                  http://piwigo.org |
+// | Copyright(C) 2008-2018 Piwigo Team                  http://piwigo.org |
 // | Copyright(C) 2003-2008 PhpWebGallery Team    http://phpwebgallery.net |
 // | Copyright(C) 2002-2003 Pierrick LE GALL   http://le-gall.net/pierrick |
 // +-----------------------------------------------------------------------+
@@ -74,7 +74,7 @@ function ppm_batch_global_submit($action, $collection)
       // and process each individually 
       foreach ($collection as $id)
       {
-        ppm_move_item($target_cat, $id, $ppm_test_mode);
+        ppm_move_item($target_cat, $id, $ppm_test_mode, 'photo');
       }
     }
     else // no destination selected
