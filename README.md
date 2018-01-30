@@ -74,7 +74,7 @@ No program is without bugs and while I've tested the plugin extensively myself, 
 - - -
 ## To Do
 
-- nothing right now
+- fix known issue with moving items across devices (i.e., symbolic links) (see issue #[8](https://github.com/jradwan/Piwigo-physical_photo_move/issues/8))
 
 - - -
 ## Contact
