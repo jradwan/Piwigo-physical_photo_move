@@ -74,7 +74,7 @@ function ppm_batch_global_submit($action, $collection)
       // and process each individually 
       foreach ($collection as $id)
       {
-        ppm_move_item($target_cat, $id, $ppm_test_mode);
+        ppm_move_item($target_cat, $id, $ppm_test_mode, 'photo');
       }
     }
     else // no destination selected

@@ -66,7 +66,7 @@ if (isset($_POST['move_item']))
   if (isset($_POST['cat_id']))
   {
     $target_cat = $_POST['cat_id'];
-    ppm_move_item($target_cat, $_GET['image_id'], $ppm_test_mode);
+    ppm_move_item($target_cat, $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
   }
   else // no destination selected
   {

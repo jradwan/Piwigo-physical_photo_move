@@ -58,11 +58,9 @@ function ppm_list_physical_albums_no_subcats($id)
 
 
 // move an item by calling the proper procedure for the item type
-function ppm_move_item($target_cat, $id, $ppm_test_mode)
+function ppm_move_item($target_cat, $id, $ppm_test_mode, $item_type)
 {
   global $page;
-
-  $item_type = $_GET['ppm_type'];
 
   // build debugging messages (for test mode)
   if ($ppm_test_mode)
