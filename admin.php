@@ -128,8 +128,31 @@ elseif ($_GET['ppm_type'] == 'album')
   $storage_cat_path = get_fulldirs(explode(',', $image_info['uppercats']));
   $storage_cat_nav = get_cat_display_name($storage_cat_info['upper_names']);
 
-  // set template items
-  $item_thumb = DerivativeImage::thumb_url(get_image_infos($storage_cat_info['representative_picture_id']));
+  // determine how many items (not sub-albums) are in the current album
+  $query = 'SELECT
+                COUNT(image_id)
+            FROM '.IMAGES_TABLE.'
+            JOIN '.IMAGE_CATEGORY_TABLE.' ON image_id = id
+            WHERE category_id = '.$item_id.';';
+  list($image_count) = pwg_db_fetch_row(pwg_query($query));
+
+  // build the HTML for the album thumbnail in $item_thumb
+  $item_thumb  = '<td id="albumThumbnail" style="vertical-align:top">';
+
+  if ($image_count != 0)
+  {
+    $item_thumb .= '<img src="';
+    $item_thumb .= DerivativeImage::thumb_url(get_image_infos($storage_cat_info['representative_picture_id']));
+    $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail"';
+  }
+  else
+  {
+    // the current album has no items (and thus no thumbnail to show) so use a placeholder
+    $item_thumb .= '<i class="icon-picture"></i> ';
+  }
+  $item_thumb .= '</td>';
+
+  // set remaining template items
   $item_path = $storage_cat_path[$item_id];
   $header_text = 'EDIT_ALBUM';
   $legend_text = 'MOVE_ALBUM';

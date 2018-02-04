@@ -4,9 +4,7 @@
   <legend>{{$legend_text}|@translate}</legend>
   <table>
     <tr>
-      <td id="albumThumbnail" style="vertical-align:top">
-        <img src="{$TN_SRC}" alt="{'THUMBNAIL'|@translate}" class="Thumbnail">
-      </td>
+      {$TN_SRC}
       <td style="vertical-align:center">
           <p style="text-align:left; margin-top:0;">
           <strong>{'CURR_PHYS_ALBUM'|@translate}</strong> {$storage_category}<br>
