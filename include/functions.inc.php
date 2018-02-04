@@ -185,7 +185,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     if (!$ppm_test_mode)
     {
       $move_status_ok = rename($source_file_path, $dest_file_path);
-      @chmod($dest_file_path, 0644);
+      @ppm_chmod_path($dest_file_path);
     }
 
     if ($move_status_ok)
@@ -266,7 +266,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
 
           // move representative
           $move_status_ok = rename($source_rep_path, $dest_rep_path);
-          @chmod($dest_rep_path, 0644);
+          @ppm_chmod_path($dest_rep_path);
 
           // remove the source pwg_representative directory if it's empty
           @rmdir($source_dir.'/pwg_representative');
@@ -288,7 +288,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           {
             $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
             $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
-            @chmod($dest_derivatives.'/'.$dest_derivative_filename, 0644);
+            @ppm_chmod_path($dest_derivatives.'/'.$dest_derivative_filename);
           }
 
           // count the files left in the source derivatives folder
@@ -319,7 +319,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           {
             $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
             $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
-            @chmod($dest_derivatives.'/'.$dest_derivative_filename, 0644);
+            @ppm_chmod_path($dest_derivatives.'/'.$dest_derivative_filename);
           }
 
           // count the files left in the source derivatives folder
@@ -513,14 +513,42 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
 } 
 
 
-// recursively set 0644 permissions on a path
+// set permissions on a specified path
+function ppm_chmod_path($path)
+{
+  if (is_dir($path))
+  {
+    @chmod($path, 0755);
+  }
+  else
+  {
+    @chmod($path, 0644);
+  }
+}
+
+
+// set permissions on a specified item
+function ppm_chmod_item($item)
+{
+  if ($item->isDir())
+  {
+    @chmod($item->getPathname(), 0755);
+  }
+  else
+  {
+    @chmod($item->getPathname(), 0644);
+  }
+}
+
+
+// recursively set reasonable permissions on a path
 function ppm_chmod_r($path) 
 {
   $dir = new DirectoryIterator($path);
 
   foreach ($dir as $item)
   {
-    @chmod($item->getPathname(), 0644);
+    @ppm_chmod_item($item);
     if ($item->isDir() && !$item->isDot()) 
     {
       @ppm_chmod_r($item->getPathname());
