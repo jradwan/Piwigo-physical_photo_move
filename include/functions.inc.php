@@ -437,11 +437,14 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
 
         if ($move_status_ok) 
         {
-          //move the derivatives (thumbnails, resizes, etc.)
+          //move the derivatives folder (thumbnails, resizes, etc.) if it exists
           $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir;
           $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_final;
-          $move_status_ok = rename($source_derivatives, $dest_derivatives);
-          @ppm_chmod_r($dest_derivatives);
+          if (is_dir($source_derivatives))
+          {
+            $move_status_ok = rename($source_derivatives, $dest_derivatives);
+            @ppm_chmod_r($dest_derivatives);
+          }
         }
 
         // make the database changes associated with the move
