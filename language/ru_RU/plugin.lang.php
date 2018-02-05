@@ -33,4 +33,6 @@ $lang['DBG_SRC'] = 'Источник:';
 $lang['DBG_DEST'] = 'Назначение:';
 $lang['DBG_PROCESSING'] = 'Обработка';
 $lang['BATCH_MENU'] = 'Переместить в физический альбом';
+$lang['OR'] = 'ИЛИ';
+$lang['ROOT_ALBUM_CHECKBOX'] = 'Переместить в корневой альбом';
 ?>

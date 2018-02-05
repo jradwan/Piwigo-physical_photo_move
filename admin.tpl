@@ -23,6 +23,8 @@
     <select class="categoryList" name="cat_id" size="10">
       {html_options options=$categories selected=$categories_selected}
     </select>
+    <b>- {'OR'|@translate} - </b>
+    <label><input type="checkbox" name="root_album" value="1" /> {'ROOT_ALBUM_CHECKBOX'|@translate}</label>
     <p>
     <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
     <p style="text-align:left"><input class="submit" type="submit" value="{'MOVE_BUTTON'|@translate}" name="move_item"></p>
