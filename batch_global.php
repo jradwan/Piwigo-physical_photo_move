@@ -74,7 +74,35 @@ function ppm_batch_global_submit($action, $collection)
       // and process each individually 
       foreach ($collection as $id)
       {
-        ppm_move_item($target_cat, $id, $ppm_test_mode, 'photo');
+
+        // filter out any selected virtual photos
+        $query = '
+        SELECT
+          name,
+          path,
+          storage_category_id
+          FROM '.IMAGES_TABLE.'
+          WHERE id = '.$id.'
+          ;';
+        $result = pwg_query($query);
+        $row = pwg_db_fetch_assoc($result);
+        $virtual_cat_id = $row['storage_category_id'];
+
+        if (!is_null($virtual_cat_id))
+        {
+          // this is a physical photo, go ahead and process the move
+          ppm_move_item($target_cat, $id, $ppm_test_mode, 'photo');
+        }
+        else
+        {
+          // build warning message that a virtual photo was skipped
+          $virtual_msg = l10n('MSG_SKIPPED_VIRTUAL').' "'.$row['name'].'" (id #'.$id.', path: '.$row['path'].')';
+
+          array_push(
+            $page['warnings'],
+            l10n($virtual_msg)
+            );
+        }
       }
     }
     else // no destination selected
