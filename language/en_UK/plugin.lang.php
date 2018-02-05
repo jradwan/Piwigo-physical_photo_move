@@ -35,4 +35,6 @@ $lang['DBG_SRC'] = 'Source:';
 $lang['DBG_DEST'] = 'Destination:';
 $lang['DBG_PROCESSING'] = 'Processing';
 $lang['BATCH_MENU'] = 'Move to physical album';
+$lang['OR'] = 'OR';
+$lang['ROOT_ALBUM_CHECKBOX'] = 'Move to root album';
 ?>
