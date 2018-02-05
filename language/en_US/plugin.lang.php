@@ -25,6 +25,7 @@ $lang['MSG_FILE_MOVE_SUCCESS'] = 'file successfully moved to ';
 $lang['MSG_DIR_MOVE_SUCCESS'] = 'directory successfully moved to ';
 $lang['MSG_FILE_MOVE_ERR'] = 'An error occured during the file move.';
 $lang['MSG_DIR_MOVE_ERR'] = 'An error occured during the directory move.';
+$lang['MSG_DIR_CREATED'] = 'Missing derivatives folder created: ';
 $lang['MSG_CHECK_LOG'] = 'Please check the Piwigo and web server logs for details.';
 $lang['MSG_ALBUM_EXISTS_ERR'] = 'A directory with the same name already exists in the destination. Move aborted.';
 $lang['MSG_NO_DEST'] = 'No destination selected.';

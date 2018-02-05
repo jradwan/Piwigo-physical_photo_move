@@ -440,8 +440,24 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
           //move the derivatives folder (thumbnails, resizes, etc.) if it exists
           $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir;
           $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_final;
+          $dest_derivatives_parent = './'.PWG_DERIVATIVE_DIR.$dest_cat_path;
           if (is_dir($source_derivatives))
           {
+            // make sure the parent target folder structure exists
+            if (!is_dir($dest_derivatives_parent))
+            {
+              // create the missing parent folder structure
+              mkdir($dest_derivatives_parent, 0777, true);
+
+              // build informational message
+              $parent_msg = l10n('MSG_DIR_CREATED').$dest_derivatives_parent;
+
+              array_push(
+                $page['warnings'],
+                sprintf($parent_msg)
+              );
+            }
+
             $move_status_ok = rename($source_derivatives, $dest_derivatives);
             @ppm_chmod_r($dest_derivatives);
           }
