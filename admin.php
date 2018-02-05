@@ -103,6 +103,9 @@ $template->set_filenames(
     )
   );
 
+// build the HTML for the album thumbnail in $item_thumb
+$item_thumb  = '<td id="albumThumbnail" style="vertical-align:top">';
+
 if ($_GET['ppm_type'] == 'photo')
 {
   $image_info = get_image_infos($item_id);
@@ -111,7 +114,9 @@ if ($_GET['ppm_type'] == 'photo')
   $storage_cat_nav = get_cat_display_name($storage_cat_info['upper_names']);
 
   // set template items
-  $item_thumb = DerivativeImage::thumb_url($image_info);
+  $item_thumb .= '<img src="';
+  $item_thumb .= DerivativeImage::thumb_url($image_info);
+  $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail"';
   $item_path  = $storage_cat_path;
   $header_text = 'EDIT_PHOTO';
   $legend_text = 'MOVE_PHOTO';
@@ -136,9 +141,6 @@ elseif ($_GET['ppm_type'] == 'album')
             WHERE category_id = '.$item_id.';';
   list($image_count) = pwg_db_fetch_row(pwg_query($query));
 
-  // build the HTML for the album thumbnail in $item_thumb
-  $item_thumb  = '<td id="albumThumbnail" style="vertical-align:top">';
-
   if ($image_count != 0)
   {
     $item_thumb .= '<img src="';
@@ -150,7 +152,6 @@ elseif ($_GET['ppm_type'] == 'album')
     // the current album has no items (and thus no thumbnail to show) so use a placeholder
     $item_thumb .= '<i class="icon-picture"></i> ';
   }
-  $item_thumb .= '</td>';
 
   // set remaining template items
   $item_path = $storage_cat_path[$item_id];
@@ -170,6 +171,8 @@ else
     l10n('MSG_NO_TYPE')
     );
 }
+
+$item_thumb .= '</td>';
 
 $template->assign(
   array(
