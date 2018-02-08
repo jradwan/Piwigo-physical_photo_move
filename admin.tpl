@@ -4,7 +4,9 @@
   <legend>{{$legend_text}|@translate}</legend>
   <table>
     <tr>
-      {$TN_SRC}
+      <td id="albumThumbnail" style="vertical-align:top">
+        {$TN_SRC}
+      </td>
       <td style="vertical-align:center">
           <p style="text-align:left; margin-top:0;">
           <strong>{'CURR_PHYS_ALBUM'|@translate}</strong> {$storage_category}<br>
@@ -23,9 +25,15 @@
     <select class="categoryList" name="cat_id" size="10">
       {html_options options=$categories selected=$categories_selected}
     </select>
-    <b>- {'OR'|@translate} - </b>
-    <label><input type="checkbox" name="root_album" value="1" /> {'ROOT_ALBUM_CHECKBOX'|@translate}</label>
-    <p>
+  </fieldset>
+  {if $item_type == 'album'}
+    <fieldset>
+      <legend>{'OR'|@translate}</legend>
+      <label><input type="checkbox" name="root_album" value="1" /> {'ROOT_ALBUM_CHECKBOX'|@translate}</label>
+      <a class="icon-help-circled" title="{{$root_help}|@translate}"></a>
+    </fieldset>
+  {/if}
+  <fieldset>
     <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
     <p style="text-align:left"><input class="submit" type="submit" value="{'MOVE_BUTTON'|@translate}" name="move_item"></p>
   </fieldset>
