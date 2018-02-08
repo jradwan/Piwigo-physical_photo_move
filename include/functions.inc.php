@@ -395,11 +395,30 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
   }
   else
   {
-    // get destination category information
-    $dest_cat_info = get_cat_info($target_cat);
-    $dest_cat_name = $dest_cat_info['name'];
-    $dest_cat_path = get_fulldirs(explode(',',  $dest_cat_info['uppercats']))[$target_cat];
-    $dest_cat_path_final = $dest_cat_path.'/'.$source_cat_info['dir'];
+    if ($target_cat == 'ROOT')
+    {
+      // get root URL for selected category's site
+      $query = '
+      SELECT galleries_url
+        FROM '.SITES_TABLE.','.CATEGORIES_TABLE.'
+        WHERE '.CATEGORIES_TABLE.'.site_id = '.SITES_TABLE.'.id
+        AND '.CATEGORIES_TABLE.'.id = '.$id.'
+        ;';
+      list($root_url) = pwg_db_fetch_row(pwg_query($query));
+
+      $dest_cat_path = $root_url;
+      $dest_cat_path_final = $dest_cat_path.$source_cat_info['dir'];
+
+      // override ROOT in target_cat with NULL (for database update below)
+      $target_cat = NULL;
+    }
+    else
+    {
+      // get destination category information
+      $dest_cat_info = get_cat_info($target_cat);
+      $dest_cat_path = get_fulldirs(explode(',',  $dest_cat_info['uppercats']))[$target_cat];
+      $dest_cat_path_final = $dest_cat_path.'/'.$source_cat_info['dir'];
+    }
 
     // check to see if directory already exists in destination 
     // (this can happen if the parent directory of the current category is selected)

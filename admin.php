@@ -62,20 +62,40 @@ if (isset($_POST['move_item']))
 
   $ppm_test_mode = ppm_check_test_mode();
 
-  // check selected target category and act accordingly
+  // check selected option and act accordingly
   if (isset($_POST['cat_id']))
   {
-    $target_cat = $_POST['cat_id'];
-    ppm_move_item($target_cat, $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
+    // make sure category AND root album aren't both selected
+    if (isset($_POST['root_album']))
+    {
+      array_push(
+        $page['messages'],
+        l10n('MSG_BOTH_OPTIONS_ERR')
+        );
+    }
+    else
+    {
+      // move the item to the selected category
+      $target_cat = $_POST['cat_id'];
+      ppm_move_item($target_cat, $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
+    }
   }
-  else // no destination selected
+  else
   {
-    array_push(
-      $page['messages'],
-      l10n('MSG_NO_DEST')
-      );
+    // move to root album option has been selected
+    if (isset($_POST['root_album']))
+    {
+      // move the item to the root album
+      ppm_move_item('ROOT', $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
+    }
+    else // no destination selected
+    {
+      array_push(
+        $page['messages'],
+        l10n('MSG_NO_DEST')
+        );
+    }
   }
-
 } 
 
 
@@ -103,8 +123,8 @@ $template->set_filenames(
     )
   );
 
-// build the HTML for the album thumbnail in $item_thumb
-$item_thumb  = '<td id="albumThumbnail" style="vertical-align:top">';
+// initialize the HTML for the item's thumbnail
+$item_thumb  = '';
 
 if ($_GET['ppm_type'] == 'photo')
 {
@@ -116,7 +136,7 @@ if ($_GET['ppm_type'] == 'photo')
   // set template items
   $item_thumb .= '<img src="';
   $item_thumb .= DerivativeImage::thumb_url($image_info);
-  $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail"';
+  $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail">';
   $item_path  = $storage_cat_path;
   $header_text = 'EDIT_PHOTO';
   $legend_text = 'MOVE_PHOTO';
@@ -145,7 +165,7 @@ elseif ($_GET['ppm_type'] == 'album')
   {
     $item_thumb .= '<img src="';
     $item_thumb .= DerivativeImage::thumb_url(get_image_infos($storage_cat_info['representative_picture_id']));
-    $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail"';
+    $item_thumb .= '" alt={\'THUMBNAIL\'|@translate}" class=Thumbnail">';
   }
   else
   {
@@ -172,8 +192,6 @@ else
     );
 }
 
-$item_thumb .= '</td>';
-
 $template->assign(
   array(
     'TITLE' => render_element_name($image_info),
@@ -184,6 +202,8 @@ $template->assign(
     'legend_text' => $legend_text,
     'dir_text' => $dir_text,
     'help_text' => $help_text,
+    'root_help' => 'MSG_ROOT_HELP',
+    'item_type' => $_GET['ppm_type'],
     )
   );
 
