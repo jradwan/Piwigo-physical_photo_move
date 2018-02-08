@@ -36,7 +36,7 @@ All previously generated representatives (thumbnails for non-image files) and de
 
 ### Moving an Album
 
-Select a destination album (only other physical albums are shown). When moving an album, that album and its sub-albums are hidden from the list (preventing you from moving a parent folder into itself or one its children).
+Either select a destination album (only physical albums are shown and the current album and its sub-albums are hidden from the list, preventing you from moving a parent folder into itself or one its children) or turn on the "Move to root album" checkbox to move the album into your gallery's home album.
 
 ![UI screenshot](https://github.com/jradwan/Piwigo-physical_photo_move/raw/master/resources/ppm-main-ui-folder.jpg)
 
