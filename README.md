@@ -75,7 +75,6 @@ No program is without bugs and while I've tested the plugin extensively myself, 
 ## To Do
 
 - fix known issue with moving items across devices (i.e., symbolic links) (see issue #[8](https://github.com/jradwan/Piwigo-physical_photo_move/issues/8))
-- add ability to move album to root level (see issue #[13](https://github.com/jradwan/Piwigo-physical_photo_move/issues/13))
 
 - - -
 ## Contact
