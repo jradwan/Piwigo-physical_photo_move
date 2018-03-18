@@ -8,6 +8,8 @@ PPM (Physical Photo Move) is an attempt to alleviate this inconvenience by allow
 - - -
 ## Usage
 
+_Note:_ please make sure you are using at least PHP v5.6 before activating the plug-in (see issue #[6](https://github.com/jradwan/Piwigo-physical_photo_move/issues/6))
+
 After activating the plugin for your Piwigo site, there will be a "Move" tab in the "Edit" area for any item that is located in a physical album.
 
 ### Moving a Photo (or Video)
