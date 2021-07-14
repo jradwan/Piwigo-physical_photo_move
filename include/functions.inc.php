@@ -34,7 +34,7 @@ function ppm_list_physical_albums()
     WHERE dir IS NOT NULL
   ;';
   $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'categories', false);
+  display_select_cat_wrapper($query, $cat_selected, 'categories', true);
 }
 
 
@@ -53,7 +53,7 @@ function ppm_list_physical_albums_no_subcats($id)
     and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
   ;';
   $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'categories', false);
+  display_select_cat_wrapper($query, $cat_selected, 'categories', true);
 }
 
 
