@@ -1,6 +1,6 @@
 <!-- physical photo move -->
 <div id="ppm" style="bulkAction">
-  <table style="width:525px">
+  <table style="width:525px" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td>
         <select data-selectize="categories" data-default="" style="width:500px" name="cat_id" placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}">
