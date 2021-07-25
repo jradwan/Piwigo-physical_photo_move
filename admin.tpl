@@ -2,11 +2,13 @@
 
 <fieldset>
   <legend>{{$legend_text}|@translate}</legend>
-  <table>
+  <table align="left">
     <tr>
       <td id="albumThumbnail" style="vertical-align:top">
         {$TN_SRC}
       </td>
+    </tr>
+    <tr>
       <td style="vertical-align:center">
           <p style="text-align:left; margin-top:0;">
           <strong>{'CURR_PHYS_ALBUM'|@translate}</strong> {$storage_category}<br>
@@ -22,7 +24,7 @@
       {'DEST_ALBUM'|@translate}
       <a class="icon-help-circled" title="{{$help_text}|@translate}"></a>
     </legend>
-    <select class="categoryList" name="cat_id" size="10">
+    <select data-selectize="categories" data-default="" style="width:500px" name="cat_id" placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}">
       {html_options options=$categories selected=$categories_selected}
     </select>
   </fieldset>
