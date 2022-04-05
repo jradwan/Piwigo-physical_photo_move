@@ -76,7 +76,6 @@ No program is without bugs and while I've tested the plugin extensively myself, 
 - - -
 ## To Do
 
-- fix known issue with moving items across devices (i.e., symbolic links) (see issue #[8](https://github.com/jradwan/Piwigo-physical_photo_move/issues/8))
 - fix issues with data-selectize dropdowns in Batch Manager and on individual photo/album tab (see issues #[26](https://github.com/jradwan/Piwigo-physical_photo_move/issues/26) and  #[27](https://github.com/jradwan/Piwigo-physical_photo_move/issues/27))
 
 - - -
