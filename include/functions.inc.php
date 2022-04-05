@@ -184,7 +184,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     $move_status_ok = true;
     if (!$ppm_test_mode)
     {
-      $move_status_ok = rename($source_file_path, $dest_file_path);
+      $move_status_ok = ppm_move_file_or_folder($source_file_path, $dest_file_path);
       @ppm_chmod_path($dest_file_path);
     }
 
@@ -265,7 +265,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           }
 
           // move representative
-          $move_status_ok = rename($source_rep_path, $dest_rep_path);
+          $move_status_ok = ppm_move_file_or_folder($source_rep_path, $dest_rep_path);
           @ppm_chmod_path($dest_rep_path);
 
           // remove the source pwg_representative directory if it's empty
@@ -287,7 +287,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           foreach (glob($source_derivatives) as $source_derivative_filename)
           {
             $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
-            $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
+            $move_status_ok = ppm_move_file_or_folder($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
             @ppm_chmod_path($dest_derivatives.'/'.$dest_derivative_filename);
           }
 
@@ -318,7 +318,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           foreach (glob($source_derivatives) as $source_derivative_filename)
           {
             $dest_derivative_filename = pathinfo($source_derivative_filename)['basename'];
-            $move_status_ok = rename($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
+            $move_status_ok = ppm_move_file_or_folder($source_derivative_filename, $dest_derivatives.'/'.$dest_derivative_filename);
             @ppm_chmod_path($dest_derivatives.'/'.$dest_derivative_filename);
           }
 
@@ -451,7 +451,7 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
         $move_status_ok = true;
        
         // move the directory
-        $move_status_ok = rename($source_dir, $dest_cat_path_final);
+        $move_status_ok = ppm_move_file_or_folder($source_dir, $dest_cat_path_final);
         @ppm_chmod_r($dest_cat_path_final);
 
         if ($move_status_ok) 
@@ -477,7 +477,7 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
               );
             }
 
-            $move_status_ok = rename($source_derivatives, $dest_derivatives);
+            $move_status_ok = ppm_move_file_or_folder($source_derivatives, $dest_derivatives);
             @ppm_chmod_r($dest_derivatives);
           }
         }
@@ -592,6 +592,58 @@ function ppm_chmod_r($path)
       @ppm_chmod_r($item->getPathname());
     }
   }
+}
+
+// custom function for moving files or folders (recursively)
+// using copy/unlink/rmdir instead of rename to avoid cross-device rename issues
+// see https://bugs.php.net/bug.php?id=54097 and https://www.php.net/manual/en/function.rename.php#113943
+function ppm_move_file_or_folder($source, $target)
+{
+  if (is_dir($source))
+  {
+    @mkdir($target);
+    $d = dir($source);
+    while (FALSE !== ($entry = $d->read()))
+    {
+      if ($entry == '.' || $entry == '..')
+      {
+        continue;
+      }
+      $Entry = $source . '/' . $entry;
+      if (is_dir($Entry))
+      {
+        $move_item_status_ok = ppm_move_file_or_folder($Entry, $target . '/' . $entry);
+        // delete sub-folder (which should be empty at this point) if copy/unlink was successful
+        if ($move_item_status_ok)
+        {
+          rmdir($Entry);
+        }
+        continue;
+      }
+      $move_item_status_ok = copy($Entry, $target . '/' . $entry);
+      // delete source file if copy was successful
+      if ($move_item_status_ok)
+      {
+        unlink($Entry);
+      }
+    }
+    $d->close();
+    // delete source folder (which should be empty at this point) if copy/unlink was successful
+    if ($move_item_status_ok)
+    {
+      rmdir($source);
+    }
+  }
+  else
+  {
+    $move_item_status_ok = copy($source, $target);
+    // delete source file if copy was successful
+    if ($move_item_status_ok)
+    {
+      unlink($source);
+    }
+  }
+  return $move_item_status_ok;
 }
 
 ?>
