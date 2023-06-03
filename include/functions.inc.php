@@ -601,6 +601,7 @@ function ppm_move_file_or_folder($source, $target)
 {
   if (is_dir($source))
   {
+    $move_item_status_ok = true;
     @mkdir($target);
     $d = dir($source);
     while (FALSE !== ($entry = $d->read()))
