@@ -26,7 +26,7 @@ function ppm_batch_global()
   global $template;
 
   // assign the template for batch management
-  $template->set_filename('ppm_batch_global', PPM_PATH.'/batch_global.tpl');
+  $template->set_filename('ppm_batch_global', PPM_PATH.'/template/batch_global.tpl');
 
   // populate the selection scroll with physical albums
   ppm_list_physical_albums();

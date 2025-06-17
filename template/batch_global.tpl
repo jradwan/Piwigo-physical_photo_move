@@ -2,8 +2,8 @@
 <table style="width:525px" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <select data-selectize="categories" data-default="" name="cat_id" style="width:500px" placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}">
-        {html_options options=$categories selected=$categories_selected}
+      <select size="20" style="width:500px" name="cat_id">
+        {html_options options=$ppm_categories selected=$categories_selected}
       </select>
     </td>
     <td>
