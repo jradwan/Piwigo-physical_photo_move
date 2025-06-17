@@ -34,7 +34,7 @@ Only the stored album (i.e., the folder location on disk) is changed, along with
 
 ![merge](https://github.com/jradwan/Piwigo-physical_photo_move/blob/master/resources/ppm-virtual-merge.jpg)
 
-All previously generated representatives (thumbnails for non-image files) and derivates (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
+All previously generated representatives (thumbnails for non-image files) and derivatives (resizes, thumbnails, etc. for images) are also moved to their proper destination directories.
 
 ### Moving an Album
 
@@ -76,8 +76,6 @@ No program is without bugs and while I've tested the plugin extensively myself, 
 - - -
 ## To Do
 
-- fix issues with data-selectize dropdowns in Batch Manager and on individual photo/album tab (see issues #[26](https://github.com/jradwan/Piwigo-physical_photo_move/issues/26) and  #[27](https://github.com/jradwan/Piwigo-physical_photo_move/issues/27))
-
 - - -
 ## Contact
 
@@ -91,4 +89,5 @@ Jeremy C. Radwan
 
 - [Piwigo](http://piwigo.org/)
 - [Piwigo Extensions](http://piwigo.org/ext/)
-- [Piwigo Plugin Tutorial](http://piwigo.org/doc/doku.php?id=dev:extensions:plugin_tutorial1)
+- [Piwigo Plugin Development](https://github.com/Piwigo/Piwigo/wiki/Plugin-developpement)
+- [Piwigo Plugin Tutorial](https://github.com/Piwigo/Piwigo/wiki/Plugin-Tutorial:-Hello-world!)

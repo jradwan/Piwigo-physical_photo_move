@@ -34,7 +34,7 @@ function ppm_list_physical_albums()
     WHERE dir IS NOT NULL
   ;';
   $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'categories', true);
+  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
 }
 
 
@@ -53,7 +53,7 @@ function ppm_list_physical_albums_no_subcats($id)
     and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
   ;';
   $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'categories', true);
+  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
 }
 
 
@@ -622,9 +622,11 @@ function ppm_move_file_or_folder($source, $target)
         continue;
       }
       $move_item_status_ok = copy($Entry, $target . '/' . $entry);
-      // delete source file if copy was successful
+      // preserve original modified date/time then delete the source file (if copy was successful)
       if ($move_item_status_ok)
       {
+        $orig_date_time = filemtime($Entry);
+        touch($target . '/'. $entry, $orig_date_time);
         unlink($Entry);
       }
     }
@@ -638,9 +640,11 @@ function ppm_move_file_or_folder($source, $target)
   else
   {
     $move_item_status_ok = copy($source, $target);
-    // delete source file if copy was successful
+    // preserve original modified date/time then delete the source file (if copy was successful)
     if ($move_item_status_ok)
     {
+      $orig_date_time = filemtime($source);
+      touch($target, $orig_date_time);
       unlink($source);
     }
   }
