@@ -23,17 +23,8 @@
       {'DEST_ALBUM'|@translate}
       <a class="icon-help-circled" title="{{$help_text}|@translate}"></a>
     </legend>
-    <select size="20" style="width:500px;" name="cat_id">
-        {html_options options=$ppm_categories selected=$categories_selected}
-    </select>
+    {$ppm_album_select}
   </fieldset>
-  {if $item_type == 'album'}
-  <fieldset>
-      <legend>{'OR'|@translate}</legend>
-      <label><input type="checkbox" name="root_album" value="1" /> {'ROOT_ALBUM_CHECKBOX'|@translate}</label>
-      <a class="icon-help-circled" title="{{$root_help}|@translate}"></a>
-  </fieldset>
-  {/if}
   <fieldset>
     <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
     <p style="text-align:left"><input class="submit" type="submit" value="{'MOVE_BUTTON'|@translate}" name="move_item"></p>

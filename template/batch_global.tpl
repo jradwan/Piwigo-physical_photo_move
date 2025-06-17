@@ -2,9 +2,7 @@
 <table style="width:525px" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <select size="20" style="width:500px" name="cat_id">
-        {html_options options=$ppm_categories selected=$categories_selected}
-      </select>
+      {$ppm_album_select}
     </td>
     <td>
       <a class="icon-help-circled" title="{'DEST_ALBUM_HELP_BATCH'|@translate}" style="cursor:help"></a>

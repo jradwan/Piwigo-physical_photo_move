@@ -32,12 +32,9 @@ $lang['MSG_ALBUM_EXISTS_ERR'] = 'Imenik z istim imenom že obstaja na ciljnem me
 $lang['MSG_NO_DEST'] = 'Izbran ni noben cilj.';
 $lang['MSG_NO_TYPE'] = 'Izbrana je neveljavna vrsta predmeta.';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Preskočena virtualna fotografija: ';
-$lang['MSG_BOTH_OPTIONS_ERR'] = 'Izbrani sta bili možnosti ciljnega albuma IN korenskega albuma. Prosimo, izberite samo enega.';
-$lang['MSG_ROOT_HELP'] = 'Premaknite ta album v korenski (domači) album galerije.';
 $lang['DBG_SRC'] = 'Izvor:';
 $lang['DBG_DEST'] = 'Cilj:';
 $lang['DBG_PROCESSING'] = 'Obdelava';
 $lang['BATCH_MENU'] = 'Premakni v fizični album';
-$lang['OR'] = 'ALI';
-$lang['ROOT_ALBUM_CHECKBOX'] = 'Premakni v korenski album';
+$lang['ROOT_ALBUM_LABEL'] = 'Korenski Album';
 ?>

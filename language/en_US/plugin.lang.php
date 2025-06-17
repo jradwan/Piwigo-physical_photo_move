@@ -32,12 +32,9 @@ $lang['MSG_ALBUM_EXISTS_ERR'] = 'A directory with the same name already exists i
 $lang['MSG_NO_DEST'] = 'No destination selected.';
 $lang['MSG_NO_TYPE'] = 'Invalid object type selected.';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Skipped virtual photo';
-$lang['MSG_BOTH_OPTIONS_ERR'] = 'Both destination album AND root album options were selected. Please select only one.';
-$lang['MSG_ROOT_HELP'] = 'Move this album to the gallery\'s root (home) album.';
 $lang['DBG_SRC'] = 'Source:';
 $lang['DBG_DEST'] = 'Destination:';
 $lang['DBG_PROCESSING'] = 'Processing';
 $lang['BATCH_MENU'] = 'Move to physical album';
-$lang['OR'] = 'OR';
-$lang['ROOT_ALBUM_CHECKBOX'] = 'Move to root album';
+$lang['ROOT_ALBUM_LABEL'] = 'Root Album';
 ?>

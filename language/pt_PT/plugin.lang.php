@@ -32,12 +32,9 @@ $lang['MSG_ALBUM_EXISTS_ERR'] = 'Uma directoria com o mesmo no já existe no des
 $lang['MSG_NO_DEST'] = 'Nenhum destino selecionado.';
 $lang['MSG_NO_TYPE'] = 'Tipo de objeto selecionado inválido..';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Foto virtual ignorada';
-$lang['MSG_BOTH_OPTIONS_ERR'] = 'Está selecionado um album de destino E um algum na raiz. Por favor selecione apenas um.';
-$lang['MSG_ROOT_HELP'] = 'Mover este album para a raiz da galeria.';
 $lang['DBG_SRC'] = 'Origem:';
 $lang['DBG_DEST'] = 'Destino:';
 $lang['DBG_PROCESSING'] = 'A processar';
 $lang['BATCH_MENU'] = 'Mover para album fisico';
-$lang['OR'] = 'OU';
-$lang['ROOT_ALBUM_CHECKBOX'] = 'Mover para album para a raiz';
+$lang['ROOT_ALBUM_LABEL'] = 'Album Principal';
 ?>

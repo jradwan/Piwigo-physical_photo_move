@@ -21,8 +21,10 @@ function ppm_check_test_mode()
 }
 
 
-// return list of categories that are actual physical albums
-function ppm_list_physical_albums()
+// returns list of categories that are actual physical albums
+// id: id of item being moved (for albums only)
+// exclude_subcats: true/false to exclude album/sub-albums (for albums only)
+function ppm_list_physical_albums($id, $exclude_subcats): string
 {
   $query = '
   SELECT
@@ -31,29 +33,39 @@ function ppm_list_physical_albums()
       uppercats,
       global_rank
     FROM '.CATEGORIES_TABLE. '
-    WHERE dir IS NOT NULL
-  ;';
-  $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
-}
+    WHERE dir IS NOT NULL';
 
+  if ($exclude_subcats)
+  {
+    $query = $query . ' AND id NOT IN ('.$id.','.implode(',',get_subcat_ids(array($id))).');';
+    $root_album_entry = '<option value="0">' . htmlspecialchars(l10n('ROOT_ALBUM_LABEL')) . '</option>';
+  }
+  else
+  {
+    $query = $query . ';';
+    $root_album_entry = '';
+  }
 
-// return list of categories that are actual physical albums,
-// excluding the current album and its sub-categories
-function ppm_list_physical_albums_no_subcats($id)
-{
-  $query = '
-  SELECT
-      id,
-      name,
-      uppercats,
-      global_rank
-    FROM '.CATEGORIES_TABLE. '
-    WHERE dir IS NOT NULL
-    and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
-  ;';
-  $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
+  $result = pwg_query($query);
+  $categories = [];
+  while ($row = pwg_db_fetch_assoc($result)) {
+    $categories[] = $row;
+  }
+
+  // thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+  $tree = [];
+  foreach ($categories as $cat) {
+    $parents = explode(',', $cat['uppercats']);
+    $parent_id = count($parents) >= 2 ? $parents[count($parents) - 2] : 0;
+    $tree[$parent_id][] = $cat;
+  }
+
+  $album_select_html = '<select size="20" style="width:500px" name="cat_id">'
+                     . $root_album_entry
+                     . ppm_build_album_select(0, $tree, 1)
+                     . '</select>';
+
+  return $album_select_html;
 }
 
 
@@ -594,6 +606,7 @@ function ppm_chmod_r($path)
   }
 }
 
+
 // custom function for moving files or folders (recursively)
 // using copy/unlink/rmdir instead of rename to avoid cross-device rename issues
 // see https://bugs.php.net/bug.php?id=54097 and https://www.php.net/manual/en/function.rename.php#113943
@@ -649,6 +662,27 @@ function ppm_move_file_or_folder($source, $target)
     }
   }
   return $move_item_status_ok;
+}
+
+
+// build HTML select options for album selector
+// thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+function ppm_build_album_select(int $parent, array $tree, int $depth = 0): string 
+{
+  $html = '';
+
+  if (isset($tree[$parent])) {
+    usort($tree[$parent], fn($a, $b) => strcmp($a['name'], $b['name']));
+    foreach ($tree[$parent] as $node) {
+      $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $depth);
+      $html  .= '<option value="'
+             . (int)$node['id'] . '">'
+             . $indent . htmlspecialchars($node['name'])
+             . '</option>';
+      $html  .= ppm_build_album_select((int)$node['id'], $tree, $depth + 1);
+    }
+  }
+  return $html;
 }
 
 ?>
