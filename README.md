@@ -1,7 +1,7 @@
 # Physical Photo Move
 PPM is a [Piwigo](http://piwigo.org/) extension to move a photo, video, or album from one physical album to another, preserving all metadata.
 
-I don't use the default [virtual albums](https://doc.piwigo.org/organizing-albums/albums-and-sub-albums-piwigo#block-216b1326eaf1475a97c7f1d9b29c1eef) structure as I prefer to have all of my photos stored in folders of my own hierarchical design rather than the one created by Piwigo's upload mechanism (i.e., `./upload/year/month/day/randomfilename.jpg`). The problem with using physical albums, however, is that I tend to occasionally re-organize and move a photo, video, or album into a different physical folder. Then the next time I run Piwigo's [synchronization process](https://doc.piwigo.org/self-hosting-piwigo/importing-and-synchronizing-ftp-photos#block-993d2aa78eb843afad365ed5709725d3) the file's original location is deleted from the database and re-added in the new folder location. This means all of the metadata associated with the item (tags, description, etc.) are lost and I have to enter them all again.
+I don't use the default [virtual albums](https://doc.piwigo.org/organizing-albums/albums-and-sub-albums-piwigo#block-216b1326eaf1475a97c7f1d9b29c1eef) structure as I prefer to have all of my photos stored in folders of my own hierarchical design rather than the one created by Piwigo's upload mechanism (i.e., `upload/year/month/day/randomfilename.ext`). The problem with using physical albums, however, is that I tend to occasionally re-organize and move a photo, video, or album into a different physical folder. Then the next time I run Piwigo's [synchronization process](https://doc.piwigo.org/self-hosting-piwigo/importing-and-synchronizing-ftp-photos#block-993d2aa78eb843afad365ed5709725d3) the file's original location is deleted from the database and re-added in the new folder location. This means all of the metadata associated with the item (tags, description, etc.) are lost and I have to enter them all again.
 
 PPM (Physical Photo Move) is an attempt to alleviate this inconvenience by allowing an existing item in a physical folder (i.e., not in the upload folder and linked into a virtual album) to be moved to another physical folder and keep all the existing metadata.
 
@@ -36,7 +36,7 @@ All previously generated representatives (thumbnails for non-image files) and de
 
 ### Moving an Album
 
-Either select a destination album (only physical albums are shown and the current album and its sub-albums are hidden from the list, preventing you from moving a parent folder into itself or one its children) or turn on the "Move to root album" checkbox to move the album into your gallery's home album.
+Select a destination album (only other physical albums are shown). The current album with its sub-albums are also hidden from the list, preventing you from moving a parent folder into itself or into one its children. You can also select the "Root Album" to move the album into your gallery's top-level album.
 
 ![UI screenshot](resources/ppm-main-ui-folder.jpg)
 
@@ -65,7 +65,7 @@ Follow the same instructions as above to batch move the items to the selected de
 - - -
 ## Disclaimer
 
-This is my first attempt at developing a plug-in for Piwigo! It was created to address a specific problem I was having with photo management and physical albums. 
+This is my first attempt at developing a plugin for Piwigo! It was created to address a specific problem I was having with photo management and physical albums. 
 
 ***WARNING!*** PPM makes file system and database changes! _Please_ make sure you have a backup of your Piwigo folder structure and database before trying this plugin for the first time. 
 
