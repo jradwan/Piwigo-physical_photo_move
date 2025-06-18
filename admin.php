@@ -174,6 +174,7 @@ $template->assign(
     'help_text'        => $help_text,
     'item_type'        => $_GET['ppm_type'],
     'ppm_album_select' => $album_select,
+    'PPM_PATH'         => PPM_PATH,
     )
   );
 

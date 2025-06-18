@@ -30,7 +30,12 @@ function ppm_batch_global()
 
   // populate the selection scroll with physical albums
   $album_select = ppm_list_physical_albums(0, false);
-  $template->assign('ppm_album_select', $album_select);
+  $template->assign(
+    array(
+      'ppm_album_select' => $album_select,
+      'PPM_PATH'         => PPM_PATH,
+    )
+  );
 
   // add item to the "choose action" dropdown in the batch manager
   $template->append('element_set_global_plugins_actions', array(

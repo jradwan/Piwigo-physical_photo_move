@@ -23,10 +23,31 @@
       {'DEST_ALBUM'|@translate}
       <a class="icon-help-circled" title="{{$help_text}|@translate}"></a>
     </legend>
-    {$ppm_album_select}
+    <div class="album-select">
+      {$ppm_album_select}
+    </div>
+    <div class="album-typeahead-wrapper" style="margin-top:8px;">
+      <input
+        type="text"
+        id="album-typeahead"
+        placeholder="{'Album_search_placeholder'|@translate}"
+        class="album-typeahead-input"
+        autocomplete="off"
+        style="width:500px; margin-bottom:0.75em;"
+      >
+      <ul
+        id="album-typeahead-results"
+        class="album-typeahead-results"
+        style="display:none;"
+      ></ul>
+    </div>
+    <input type="hidden" id="album-select" value="">
   </fieldset>
   <fieldset>
     <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
     <p style="text-align:left"><input class="submit" type="submit" value="{'MOVE_BUTTON'|@translate}" name="move_item"></p>
   </fieldset>
 </form>
+
+<!-- Include main JS -->
+{combine_script id="album_pilot_main" load="footer" path={PPM_PATH}|cat:"template/script.js"}
