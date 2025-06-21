@@ -26,7 +26,7 @@
             <input
              type="text"
              id="album-typeahead"
-             placeholder="{'Album_search_placeholder'|@translate}"
+             placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}"
              class="album-typeahead-input"
              autocomplete="off"
              style="width:480px;"
@@ -40,7 +40,7 @@
           </div>
         </td>
         <td>
-          <legend><a class="icon-help-circled" title="{'DEST_ALBUM_HELP_BATCH'|@translate}" style="cursor:help"></a></legend>
+          <legend><a class="icon-help-circled" title="{{$help_text}|@translate}" style="cursor:help"></a></legend>
         </td>
       <tr>
         <td>

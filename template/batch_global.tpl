@@ -6,7 +6,7 @@
         <input
           type="text"
           id="album-typeahead"
-          placeholder="{'Album_search_placeholder'|@translate}"
+          placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}"
           class="album-typeahead-input"
           autocomplete="off"
           style="width:480px;"
