@@ -1,8 +1,4 @@
-/*
-File: template/script.js – AlbumPilot Plugin for Piwigo
-Author: Hendrik Schöttle
-SPDX-License-Identifier: MIT OR LGPL-2.1-or-later OR GPL-2.0-or-later
- */
+// thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
 
 (function initAlbumTypeahead() {
     const input = document.getElementById('album-typeahead');
