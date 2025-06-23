@@ -36,7 +36,7 @@ All previously generated representatives (thumbnails for non-image files) and de
 
 ### Moving an Album
 
-Select a destination album (only other physical albums are shown). The current album with its sub-albums are also hidden from the list, preventing you from moving a parent folder into itself or into one its children. You can also select the "Root Album" to move the album into your gallery's top-level album.
+Select a destination album (only other physical albums are shown). The current album with its sub-albums are also hidden from the list, preventing you from moving a parent folder into itself or into one its children. You can also select the "Root Album" to move the album into your gallery's top-level.
 
 ![UI screenshot](resources/ppm-main-ui-folder.jpg)
 
