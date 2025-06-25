@@ -27,7 +27,9 @@
     <td>
       <div class="album-typeahead-wrapper">
         <div class="album-select">
-          {$ppm_album_select}
+          <select id="album-list" size="20" style="width:500px" name="cat_id">
+            {$ppm_album_select}
+          </select>
         </div>
       <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
       </div>
@@ -43,4 +45,4 @@
 <link rel="stylesheet" href="{$PPM_PATH}template/style.css">
 
 <!-- Include Javascript -->
-{combine_script id="album_pilot_main" load="footer" path={PPM_PATH}|cat:"template/script.js"}
+{combine_script id="ppm_script" load="footer" path={PPM_PATH}|cat:"template/script.js"}

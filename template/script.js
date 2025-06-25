@@ -38,9 +38,6 @@
         });
     });
 
-    // expose albums for external use (batch-mode, start-click)
-    window.AlbumPilotAlbums = albums;
-
     // Helper: shorten paths that are too long with ‘...’
     function truncatePath(path, maxLen = 60) {
         return path.length <= maxLen ? path : '…' + path.slice(-maxLen);

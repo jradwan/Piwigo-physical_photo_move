@@ -59,11 +59,7 @@ function ppm_list_physical_albums($id, $exclude_subcats): string
     $parent_id = count($parents) >= 2 ? $parents[count($parents) - 2] : 0;
     $tree[$parent_id][] = $cat;
   }
-
-  $album_select_html = '<select id="album-list" size="20" style="width:500px" name="cat_id">'
-                     . $root_album_entry
-                     . ppm_build_album_select(0, $tree, 1)
-                     . '</select>';
+  $album_select_html = $root_album_entry . ppm_build_album_select(0, $tree, 1);
 
   return $album_select_html;
 }
