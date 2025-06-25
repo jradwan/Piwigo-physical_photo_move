@@ -1,4 +1,4 @@
-// thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+// this code thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
 
 (function initAlbumTypeahead() {
     const input = document.getElementById('album-typeahead');

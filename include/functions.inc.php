@@ -52,7 +52,7 @@ function ppm_list_physical_albums($id, $exclude_subcats): string
     $categories[] = $row;
   }
 
-  // thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+  // this code thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
   $tree = [];
   foreach ($categories as $cat) {
     $parents = explode(',', $cat['uppercats']);
@@ -661,8 +661,8 @@ function ppm_move_file_or_folder($source, $target)
 }
 
 
-// build HTML select options for album selector
-// thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+// build HTML options list for album selector
+// this code thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
 function ppm_build_album_select(int $parent, array $tree, int $depth = 0): string 
 {
   $html = '';
