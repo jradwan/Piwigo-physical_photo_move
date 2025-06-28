@@ -184,7 +184,6 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
         $page['messages'],
         sprintf($debug_line_1),
         sprintf($debug_line_2),
-        sprintf('-----------------')
         );
     }
 

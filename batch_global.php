@@ -60,6 +60,8 @@ function ppm_batch_global_submit($action, $collection)
     if (isset($_POST['cat_id']))
     {
       $target_cat = $_POST['cat_id'];
+      $collection_size = count($collection);
+      $loop_num = 1;
 
       // $collection will be an array of image ids so loop through this 
       // and process each individually 
@@ -79,6 +81,24 @@ function ppm_batch_global_submit($action, $collection)
         $row = pwg_db_fetch_assoc($result);
         $virtual_cat_id = $row['storage_category_id'];
 
+        // add spacing between debug messages when processing multiple items in test mode
+        if ($loop_num != 1)
+        {
+          array_push(
+            $page['messages'],
+            sprintf(' ')
+          );
+        }
+
+        // show an item counter when processing multiple items in test mode
+        if ($collection_size > 1)
+        {
+          array_push(
+            $page['messages'],
+            sprintf('#' . $loop_num)
+          );
+        }
+
         if (!is_null($virtual_cat_id))
         {
           // this is a physical photo, go ahead and process the move
@@ -94,6 +114,7 @@ function ppm_batch_global_submit($action, $collection)
             l10n($virtual_msg)
             );
         }
+        $loop_num = $loop_num + 1;
       }
     }
     else // no destination selected
