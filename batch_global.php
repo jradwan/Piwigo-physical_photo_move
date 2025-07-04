@@ -56,6 +56,17 @@ function ppm_batch_global_submit($action, $collection)
 
     $ppm_test_mode = ppm_check_test_mode();
 
+    if ($ppm_test_mode)
+    {
+      $msg_type = 'messages';
+      $msg_highlight = ' **** ';
+    }
+    else
+    {
+      $msg_type = 'infos';
+      $msg_highlight = '';
+    }
+
     // check selected target category and act accordingly
     if (isset($_POST['cat_id']))
     {
@@ -81,21 +92,21 @@ function ppm_batch_global_submit($action, $collection)
         $row = pwg_db_fetch_assoc($result);
         $virtual_cat_id = $row['storage_category_id'];
 
-        // add spacing between debug messages when processing multiple items in test mode
+        // add spacing between messages when processing multiple items
         if ($loop_num != 1)
         {
           array_push(
-            $page['messages'],
+            $page[$msg_type],
             sprintf(' ')
           );
         }
 
-        // show an item counter when processing multiple items in test mode
+        // show an item counter when processing multiple items
         if ($collection_size > 1)
         {
           array_push(
-            $page['messages'],
-            sprintf('#' . $loop_num)
+            $page[$msg_type],
+            sprintf('Batch item #' . $loop_num)
           );
         }
 
@@ -107,12 +118,13 @@ function ppm_batch_global_submit($action, $collection)
         else
         {
           // build warning message that a virtual photo was skipped
-          $virtual_msg = l10n('MSG_SKIPPED_VIRTUAL').' "'.$row['name'].'" (id #'.$id.', path: '.$row['path'].')';
+          $virtual_msg = $msg_highlight.l10n('MSG_SKIPPED_VIRTUAL').' "'.$row['name'].'" (id #'.$id.
+            ', path: '.$row['path'].')'.$msg_highlight;
 
           array_push(
-            $page['warnings'],
+            $page[$msg_type],
             l10n($virtual_msg)
-            );
+          );
         }
         $loop_num = $loop_num + 1;
       }
@@ -120,7 +132,7 @@ function ppm_batch_global_submit($action, $collection)
     else // no destination selected
     {
       array_push(
-        $page['messages'],
+        $page['errors'],
         l10n('MSG_NO_DEST')
         );
     } 

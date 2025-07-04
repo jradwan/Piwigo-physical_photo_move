@@ -62,7 +62,7 @@ if (isset($_POST['move_item']))
   else // no destination selected
   {
     array_push(
-      $page['messages'],
+      $page['errors'],
       l10n('MSG_NO_DEST')
       );
   }
@@ -157,7 +157,7 @@ elseif ($_GET['ppm_type'] == 'album')
 else
 {
   array_push(
-    $page['messages'],
+    $page['errors'],
     l10n('MSG_NO_TYPE')
     );
 }
