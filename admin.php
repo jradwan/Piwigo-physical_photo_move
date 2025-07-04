@@ -50,36 +50,21 @@ if (isset($_POST['move_item']))
   // check selected option and act accordingly
   if (isset($_POST['cat_id']))
   {
-    // make sure category AND root album aren't both selected
-    if (isset($_POST['root_album']))
-    {
-      array_push(
-        $page['messages'],
-        l10n('MSG_BOTH_OPTIONS_ERR')
-        );
-    }
-    else
-    {
-      // move the item to the selected category
       $target_cat = $_POST['cat_id'];
+      // check to see if the root album was selected
+      if ($target_cat == 0)
+      {
+        $target_cat = 'ROOT';
+      }
+      // move the item to the selected category
       ppm_move_item($target_cat, $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
-    }
   }
-  else
+  else // no destination selected
   {
-    // move to root album option has been selected
-    if (isset($_POST['root_album']))
-    {
-      // move the item to the root album
-      ppm_move_item('ROOT', $_GET['image_id'], $ppm_test_mode, $_GET['ppm_type']);
-    }
-    else // no destination selected
-    {
-      array_push(
-        $page['messages'],
-        l10n('MSG_NO_DEST')
-        );
-    }
+    array_push(
+      $page['errors'],
+      l10n('MSG_NO_DEST')
+      );
   }
 } 
 
@@ -129,7 +114,7 @@ if ($_GET['ppm_type'] == 'photo')
   $help_text = 'DEST_ALBUM_HELP';
 
   // populate the selection scroll with physical albums
-  ppm_list_physical_albums();
+  $album_select = ppm_list_physical_albums(0, false);
 }
 elseif ($_GET['ppm_type'] == 'album')
 {
@@ -167,28 +152,29 @@ elseif ($_GET['ppm_type'] == 'album')
 
   // populate the selection scroll with physical albums
   // except the current album and its sub-albums
-  ppm_list_physical_albums_no_subcats($item_id);
+  $album_select = ppm_list_physical_albums($item_id, true);
 }
 else
 {
   array_push(
-    $page['messages'],
+    $page['errors'],
     l10n('MSG_NO_TYPE')
     );
 }
 
 $template->assign(
   array(
-    'TITLE' => render_element_name($image_info),
-    'TN_SRC' => $item_thumb,
-    'current_path' => $item_path,
+    'TITLE'            => render_element_name($image_info),
+    'TN_SRC'           => $item_thumb,
+    'current_path'     => $item_path,
     'storage_category' => $storage_cat_nav,
-    'header_text' => $header_text,
-    'legend_text' => $legend_text,
-    'dir_text' => $dir_text,
-    'help_text' => $help_text,
-    'root_help' => 'MSG_ROOT_HELP',
-    'item_type' => $_GET['ppm_type'],
+    'header_text'      => $header_text,
+    'legend_text'      => $legend_text,
+    'dir_text'         => $dir_text,
+    'help_text'        => $help_text,
+    'item_type'        => $_GET['ppm_type'],
+    'ppm_album_select' => $album_select,
+    'PPM_PATH'         => PPM_PATH,
     )
   );
 

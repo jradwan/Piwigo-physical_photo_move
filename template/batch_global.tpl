@@ -2,17 +2,47 @@
 <table style="width:525px" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      <select size="20" style="width:500px" name="cat_id">
-        {html_options options=$ppm_categories selected=$categories_selected}
-      </select>
+      <div class="album-typeahead-wrapper">
+        <input
+          type="text"
+          id="album-typeahead"
+          placeholder="{'DEST_ALBUM_SELECT_BATCH'|@translate}"
+          class="album-typeahead-input"
+          autocomplete="off"
+          style="width:480px;"
+        >
+        <ul
+          id="album-typeahead-results"
+          class="album-typeahead-results"
+          style="display:none;"
+        ></ul>
+        <input type="hidden" id="album-select" value="">
+      </div>
     </td>
     <td>
-      <a class="icon-help-circled" title="{'DEST_ALBUM_HELP_BATCH'|@translate}" style="cursor:help"></a>
+      <legend><a class="icon-help-circled" title="{'DEST_ALBUM_HELP_BATCH'|@translate}" style="cursor:help"></a></legend>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="album-typeahead-wrapper">
+        <div class="album-select">
+          <select id="album-list" size="20" style="width:500px" name="cat_id">
+            {$ppm_album_select}
+          </select>
+        </div>
+      <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
+      </div>
     </td>
   </tr>
   <tr>
     <td colspan=2 style="width:100%">
-      <label><input type="checkbox" name="test_mode" value="1" checked /> {'TEST_MODE_DESCR'|@translate}</label>
     </td>
   </tr>
 </table>
+
+<!-- Include CSS -->
+<link rel="stylesheet" href="{$PPM_PATH}template/style.css">
+
+<!-- Include Javascript -->
+{combine_script id="ppm_script" load="footer" path={PPM_PATH}|cat:"template/script.js"}

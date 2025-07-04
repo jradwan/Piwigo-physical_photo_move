@@ -21,8 +21,10 @@ function ppm_check_test_mode()
 }
 
 
-// return list of categories that are actual physical albums
-function ppm_list_physical_albums()
+// returns list of categories that are actual physical albums
+// id: id of item being moved (for albums only)
+// exclude_subcats: true/false to exclude album/sub-albums (for albums only)
+function ppm_list_physical_albums($id, $exclude_subcats): string
 {
   $query = '
   SELECT
@@ -31,29 +33,35 @@ function ppm_list_physical_albums()
       uppercats,
       global_rank
     FROM '.CATEGORIES_TABLE. '
-    WHERE dir IS NOT NULL
-  ;';
-  $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
-}
+    WHERE dir IS NOT NULL';
 
+  if ($exclude_subcats)
+  {
+    $query = $query . ' AND id NOT IN ('.$id.','.implode(',',get_subcat_ids(array($id))).');';
+    $root_album_entry = '<option value="0">' . htmlspecialchars(l10n('ROOT_ALBUM_LABEL')) . '</option>';
+  }
+  else
+  {
+    $query = $query . ';';
+    $root_album_entry = '';
+  }
 
-// return list of categories that are actual physical albums,
-// excluding the current album and its sub-categories
-function ppm_list_physical_albums_no_subcats($id)
-{
-  $query = '
-  SELECT
-      id,
-      name,
-      uppercats,
-      global_rank
-    FROM '.CATEGORIES_TABLE. '
-    WHERE dir IS NOT NULL
-    and id not in ('.$id.','.implode(',',get_subcat_ids(array($id))).')
-  ;';
-  $cat_selected = 0;
-  display_select_cat_wrapper($query, $cat_selected, 'ppm_categories', false);
+  $result = pwg_query($query);
+  $categories = [];
+  while ($row = pwg_db_fetch_assoc($result)) {
+    $categories[] = $row;
+  }
+
+  // this code thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+  $tree = [];
+  foreach ($categories as $cat) {
+    $parents = explode(',', $cat['uppercats']);
+    $parent_id = count($parents) >= 2 ? $parents[count($parents) - 2] : 0;
+    $tree[$parent_id][] = $cat;
+  }
+  $album_select_html = $root_album_entry . ppm_build_album_select(0, $tree, 1);
+
+  return $album_select_html;
 }
 
 
@@ -83,7 +91,7 @@ function ppm_move_item($target_cat, $id, $ppm_test_mode, $item_type)
       break;
     default:
       array_push(
-        $page['messages'],
+        $page['errors'],
         l10n('MSG_NO_TYPE')
         );
   }
@@ -104,6 +112,17 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
   $source_file_name = pathinfo($source_file_path)['filename'];
   $source_file_ext = pathinfo($source_file_path)['extension'];
 
+  if ($ppm_test_mode)
+  {
+    $msg_type = 'messages';
+    $msg_highlight = ' **** ';
+  }
+  else
+  {
+    $msg_type = 'infos';
+    $msg_highlight = '';
+  }
+
   // retrieve representative info, if applicable
   $source_rep_ext = $image_info['representative_ext'];
   if (!is_null($source_rep_ext))
@@ -119,11 +138,11 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
   if ($target_cat == $storage_cat_id)
   {
     // build no work message
-    $no_work_msg = $source_file_name.'.'.$source_file_ext.': '.l10n('MSG_NO_WORK_1').' ('.
-      $source_cat_name.') - '.l10n('MSG_NO_WORK_2');
+    $no_work_msg = $msg_highlight.$source_file_name.'.'.$source_file_ext.': '.l10n('MSG_NO_WORK_1').' ('.
+      $source_cat_name.') - '.l10n('MSG_NO_WORK_2').$msg_highlight;
 
     array_push(
-      $page['messages'],
+      $page[$msg_type],
       sprintf($no_work_msg)
       );
   }
@@ -149,11 +168,11 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
       $dest_file_name = $source_file_name.'-'.$date_string.'.'.$source_file_ext;
 
        // build rename message
-      $rename_msg = l10n('MSG_RENAME_1').$source_file_name.'.'.$source_file_ext.
-        l10n('MSG_RENAME_2').$dest_file_name.l10n('MSG_RENAME_3');
+      $rename_msg = $msg_highlight.l10n('MSG_RENAME_1').$source_file_name.'.'.$source_file_ext.
+        l10n('MSG_RENAME_2').$dest_file_name.l10n('MSG_RENAME_3').$msg_highlight;
 
       array_push(
-        $page['warnings'],
+        $page[$msg_type],
         sprintf($rename_msg)
         );
     }
@@ -173,10 +192,9 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
       $debug_line_2  = l10n('DBG_DEST').' '.$dest_file_path.' ('.$dest_cat_name.')';
 
       array_push(
-        $page['messages'],
+        $page[$msg_type],
         sprintf($debug_line_1),
         sprintf($debug_line_2),
-        sprintf('-----------------')
         );
     }
 
@@ -207,10 +225,10 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
       if ($count == 1)
       {
         // build unlink message
-        $unlink_msg = $source_file_name.'.'.$source_file_ext.' '.l10n('MSG_LINK_REMOVED');
+        $unlink_msg = $msg_highlight.$source_file_name.'.'.$source_file_ext.' '.l10n('MSG_LINK_REMOVED').$msg_highlight;
 
         array_push(
-          $page['warnings'],
+          $page[$msg_type],
           sprintf($unlink_msg)
           );
       }
@@ -340,7 +358,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           $success_msg = $dest_file_name.': '.l10n('MSG_FILE_MOVE_SUCCESS').$dest_cat_name.'.';
 
           array_push(
-            $page['infos'],
+            $page[$msg_type],
             sprintf($success_msg)
             );
         }
@@ -381,6 +399,17 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
   $source_cat_name = $source_cat_info['name'];
   $source_dir = get_fulldirs(explode(',', $source_cat_info['uppercats']))[$id];
 
+  if ($ppm_test_mode)
+  {
+    $msg_type = 'messages';
+    $msg_highlight = ' **** ';
+  }
+  else
+  {
+    $msg_type = 'infos';
+    $msg_highlight = '';
+  }
+
   // no move necessary (same category selected)
   // (this SHOULD never happen since the current category is excluded from the list)
   if ($target_cat == $id)
@@ -389,7 +418,7 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
     $no_work_msg = l10n('MSG_NO_WORK_1').' - '.l10n('MSG_NO_WORK_2');
 
     array_push(
-      $page['messages'],
+      $page['errors'],
       sprintf($no_work_msg)
       );
   }
@@ -424,10 +453,14 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
     // (this can happen if the parent directory of the current category is selected)
     if (file_exists($dest_cat_path_final))
     {
-      $error_msg = $dest_cat_path_final.': '.l10n('MSG_ALBUM_EXISTS_ERR');
+      $error_msg = $msg_highlight.$dest_cat_path_final.': '.l10n('MSG_ALBUM_EXISTS_ERR').$msg_highlight;
 
+      if (!$ppm_test_mode)
+      {
+        $msg_type = 'errors';
+      }
       array_push(
-        $page['errors'],
+        $page[$msg_type],
         sprintf($error_msg)
         );
     }
@@ -441,7 +474,7 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
         $debug_line_2  = l10n('DBG_DEST').' '.$dest_cat_path_final;
 
         array_push(
-          $page['messages'],
+          $page[$msg_type],
           sprintf($debug_line_1),
           sprintf($debug_line_2)
           );
@@ -469,10 +502,10 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
               mkdir($dest_derivatives_parent, 0777, true);
 
               // build informational message
-              $parent_msg = l10n('MSG_DIR_CREATED').$dest_derivatives_parent;
+              $parent_msg = $msg_highlight.l10n('MSG_DIR_CREATED').$dest_derivatives_parent.$msg_highlight;
 
               array_push(
-                $page['warnings'],
+                $page[$msg_type],
                 sprintf($parent_msg)
               );
             }
@@ -530,7 +563,7 @@ function ppm_move_album($target_cat, $id, $ppm_test_mode)
           $success_msg = $source_dir.': '.l10n('MSG_DIR_MOVE_SUCCESS').$dest_cat_path_final.'.';
 
           array_push(
-            $page['infos'],
+            $page[$msg_type],
             sprintf($success_msg)
             );
         } // end database changes
@@ -594,6 +627,7 @@ function ppm_chmod_r($path)
   }
 }
 
+
 // custom function for moving files or folders (recursively)
 // using copy/unlink/rmdir instead of rename to avoid cross-device rename issues
 // see https://bugs.php.net/bug.php?id=54097 and https://www.php.net/manual/en/function.rename.php#113943
@@ -649,6 +683,27 @@ function ppm_move_file_or_folder($source, $target)
     }
   }
   return $move_item_status_ok;
+}
+
+
+// build HTML options list for album selector
+// this code thanks to @HendrikSchoettle (https://github.com/HendrikSchoettle/AlbumPilot)
+function ppm_build_album_select(int $parent, array $tree, int $depth = 0): string 
+{
+  $html = '';
+
+  if (isset($tree[$parent])) {
+    usort($tree[$parent], fn($a, $b) => strcmp($a['name'], $b['name']));
+    foreach ($tree[$parent] as $node) {
+      $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $depth);
+      $html  .= '<option value="'
+             . (int)$node['id'] . '">'
+             . $indent . htmlspecialchars($node['name'])
+             . '</option>';
+      $html  .= ppm_build_album_select((int)$node['id'], $tree, $depth + 1);
+    }
+  }
+  return $html;
 }
 
 ?>

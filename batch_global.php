@@ -29,7 +29,13 @@ function ppm_batch_global()
   $template->set_filename('ppm_batch_global', PPM_PATH.'/template/batch_global.tpl');
 
   // populate the selection scroll with physical albums
-  ppm_list_physical_albums();
+  $album_select = ppm_list_physical_albums(0, false);
+  $template->assign(
+    array(
+      'ppm_album_select' => $album_select,
+      'PPM_PATH'         => PPM_PATH,
+    )
+  );
 
   // add item to the "choose action" dropdown in the batch manager
   $template->append('element_set_global_plugins_actions', array(
@@ -50,10 +56,23 @@ function ppm_batch_global_submit($action, $collection)
 
     $ppm_test_mode = ppm_check_test_mode();
 
+    if ($ppm_test_mode)
+    {
+      $msg_type = 'messages';
+      $msg_highlight = ' **** ';
+    }
+    else
+    {
+      $msg_type = 'infos';
+      $msg_highlight = '';
+    }
+
     // check selected target category and act accordingly
     if (isset($_POST['cat_id']))
     {
       $target_cat = $_POST['cat_id'];
+      $collection_size = count($collection);
+      $loop_num = 1;
 
       // $collection will be an array of image ids so loop through this 
       // and process each individually 
@@ -73,6 +92,24 @@ function ppm_batch_global_submit($action, $collection)
         $row = pwg_db_fetch_assoc($result);
         $virtual_cat_id = $row['storage_category_id'];
 
+        // add spacing between messages when processing multiple items
+        if ($loop_num != 1)
+        {
+          array_push(
+            $page[$msg_type],
+            sprintf(' ')
+          );
+        }
+
+        // show an item counter when processing multiple items
+        if ($collection_size > 1)
+        {
+          array_push(
+            $page[$msg_type],
+            sprintf('Batch item #' . $loop_num)
+          );
+        }
+
         if (!is_null($virtual_cat_id))
         {
           // this is a physical photo, go ahead and process the move
@@ -81,19 +118,21 @@ function ppm_batch_global_submit($action, $collection)
         else
         {
           // build warning message that a virtual photo was skipped
-          $virtual_msg = l10n('MSG_SKIPPED_VIRTUAL').' "'.$row['name'].'" (id #'.$id.', path: '.$row['path'].')';
+          $virtual_msg = $msg_highlight.l10n('MSG_SKIPPED_VIRTUAL').' "'.$row['name'].'" (id #'.$id.
+            ', path: '.$row['path'].')'.$msg_highlight;
 
           array_push(
-            $page['warnings'],
+            $page[$msg_type],
             l10n($virtual_msg)
-            );
+          );
         }
+        $loop_num = $loop_num + 1;
       }
     }
     else // no destination selected
     {
       array_push(
-        $page['messages'],
+        $page['errors'],
         l10n('MSG_NO_DEST')
         );
     } 
