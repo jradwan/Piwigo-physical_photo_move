@@ -58,7 +58,7 @@ PPM also supports Piwigo's Batch Manager for moving multiple items at a time. In
 
 ![batch_mode](resources/ppm-batch-ui.jpg)
 
-Follow the same instructions as above to batch move the items to the selected destination album. Multiple messages will be displayed showing the status of each file:
+Follow the same instructions as above to batch move the items to the selected destination album. Multiple messages will be displayed showing the status of each file. Be sure to pay close attention to any messages highlighted with ****:
 
 ![batch_debug](resources/ppm-batch-debug-info.jpg)
 
