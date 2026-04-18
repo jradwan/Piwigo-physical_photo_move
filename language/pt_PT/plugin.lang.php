@@ -34,6 +34,7 @@ $lang['MSG_NO_TYPE'] = 'Tipo de objeto selecionado inválido..';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Foto virtual ignorada';
 $lang['DBG_SRC'] = 'Origem:';
 $lang['DBG_DEST'] = 'Destino:';
+$lang['DBG_DERIVATIVES'] = 'Derivados:';
 $lang['DBG_PROCESSING'] = 'A processar';
 $lang['BATCH_MENU'] = 'Mover para album fisico';
 $lang['ROOT_ALBUM_LABEL'] = 'Album Principal';

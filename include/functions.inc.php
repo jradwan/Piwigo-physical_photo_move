@@ -112,6 +112,15 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
   $source_file_name = pathinfo($source_file_path)['filename'];
   $source_file_ext = pathinfo($source_file_path)['extension'];
 
+  // generate source derivative path, taking into account external site paths
+  if (strpos($source_dir, './') === 0) {
+    // path already starts with "./" so leave it alone
+    $source_dir_derivative = $source_dir;
+  } else {
+    // strip all leading "../" and replace with "./"
+    $source_dir_derivative = './' . preg_replace('#^(?:\.\./)+#', '', $source_dir);
+  }
+
   if ($ppm_test_mode)
   {
     $msg_type = 'messages';
@@ -157,6 +166,15 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     $dest_file_exists = false;
     $dest_rep_ext = '';
     $dest_rep_path = '';
+
+    // generate destination derivative path, taking into account external site paths
+    if (strpos($dest_cat_path, './') === 0) {
+      // path already starts with "./" so leave it alone
+      $dest_cat_path_derivative = $dest_cat_path;
+    } else {
+      // strip all leading "../" and replace with "./"
+      $dest_cat_path_derivative = './' . preg_replace('#^(?:\.\./)+#', '', $dest_cat_path);
+    }
      
     // check to see if filename already exists in destination
     if (file_exists($dest_cat_path.'/'.$source_file_name.'.'.$source_file_ext))
@@ -188,13 +206,13 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     if ($ppm_test_mode)
     {
       // build debug strings
-      $debug_line_1  = l10n('DBG_SRC').' '.$source_file_path.' ('.$source_cat_name.')';
-      $debug_line_2  = l10n('DBG_DEST').' '.$dest_file_path.' ('.$dest_cat_name.')';
+      $debug_line_1  = l10n('DBG_SRC').' '.$source_file_path.' ('.$source_cat_name.') ['.l10n('DBG_DERIVATIVES').' '.PWG_DERIVATIVE_DIR.$source_dir_derivative.']';
+      $debug_line_2  = l10n('DBG_DEST').' '.$dest_file_path.' ('.$dest_cat_name.') ['.l10n('DBG_DERIVATIVES').' '.PWG_DERIVATIVE_DIR.$dest_cat_path_derivative.']';
 
       array_push(
         $page[$msg_type],
         sprintf($debug_line_1),
-        sprintf($debug_line_2),
+        sprintf($debug_line_2)
         );
     }
 
@@ -290,15 +308,15 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           @rmdir($source_dir.'/pwg_representative');
 
           // move derivatives (thumbnails, resizes, etc.) of the representative
-          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/'.$source_file_name.'-*.'.$dest_rep_ext;
-          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path.'/pwg_representative/';
+          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir_derivative.'/pwg_representative/'.$source_file_name.'-*.'.$dest_rep_ext;
+          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_derivative.'/pwg_representative/';
 
           // create the pwg_representative folder if it doesn't exist in the destination
           if (!is_dir($dest_derivatives))
           {
             mkdir($dest_derivatives);
             // also copy the index.htm file to the new directory
-            copy('./'.PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/index.htm', $dest_derivatives.'/index.htm');
+            copy('./'.PWG_DERIVATIVE_DIR.$source_dir_derivative.'/pwg_representative/index.htm', $dest_derivatives.'/index.htm');
           }
 
           // loop through the list of derivatives and move them to the destination
@@ -310,21 +328,21 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           }
 
           // count the files left in the source derivatives folder
-          $remaining_file_count = count(scandir(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/')) - 2;
+          $remaining_file_count = count(scandir(PWG_DERIVATIVE_DIR.$source_dir_derivative.'/pwg_representative/')) - 2;
           if ($remaining_file_count == 1) 
           {
             // if there's only one file left in the directory, it should be index.htm; remove it.
-            @unlink(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/index.htm');
+            @unlink(PWG_DERIVATIVE_DIR.$source_dir_derivative.'/pwg_representative/index.htm');
           }
 
           // now remove the source pwg_representative directory if it's empty
-          @rmdir(PWG_DERIVATIVE_DIR.$source_dir.'/pwg_representative/');
+          @rmdir(PWG_DERIVATIVE_DIR.$source_dir_derivative.'/pwg_representative/');
         }
         else
         {
           // move derivatives (thumbnails, resizes, etc.)
-          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir.'/'.$source_file_name.'-*.'.$source_file_ext;
-          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path;
+          $source_derivatives = './'.PWG_DERIVATIVE_DIR.$source_dir_derivative.'/'.$source_file_name.'-*.'.$source_file_ext;
+          $dest_derivatives = './'.PWG_DERIVATIVE_DIR.$dest_cat_path_derivative;
 
           // create the pwg_representative folder if it doesn't exist in the destination
           if (!is_dir($dest_derivatives))
@@ -341,15 +359,15 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
           }
 
           // count the files left in the source derivatives folder
-          $remaining_file_count = count(scandir(PWG_DERIVATIVE_DIR.$source_dir)) - 2;
+          $remaining_file_count = count(scandir('./'.PWG_DERIVATIVE_DIR.$source_dir_derivative)) - 2;
           if ($remaining_file_count == 1)
           {
             // if there's only one file left in the directory, it should be index.htm; remove it.
-            @unlink(PWG_DERIVATIVE_DIR.$source_dir.'/index.htm');
+            @unlink(PWG_DERIVATIVE_DIR.$source_dir_derivative.'/index.htm');
           }
 
           // now remove the source derivatives directory if it's empty
-          @rmdir(PWG_DERIVATIVE_DIR.$source_dir);
+          @rmdir(PWG_DERIVATIVE_DIR.$source_dir_derivative);
         }
 
         if ($move_status_ok)

@@ -34,6 +34,7 @@ $lang['MSG_NO_TYPE'] = 'Izbrana je neveljavna vrsta predmeta.';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Preskočena virtualna fotografija: ';
 $lang['DBG_SRC'] = 'Izvor:';
 $lang['DBG_DEST'] = 'Cilj:';
+$lang['DBG_DERIVATIVES'] = 'Izpeljanks:';
 $lang['DBG_PROCESSING'] = 'Obdelava';
 $lang['BATCH_MENU'] = 'Premakni v fizični album';
 $lang['ROOT_ALBUM_LABEL'] = 'Korenski Album';

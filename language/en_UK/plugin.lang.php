@@ -34,6 +34,7 @@ $lang['MSG_NO_TYPE'] = 'Invalid object type selected.';
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Skipped virtual photo';
 $lang['DBG_SRC'] = 'Source:';
 $lang['DBG_DEST'] = 'Destination:';
+$lang['DBG_DERIVATIVES'] = 'Derivatives:';
 $lang['DBG_PROCESSING'] = 'Processing';
 $lang['BATCH_MENU'] = 'Move to physical album';
 $lang['ROOT_ALBUM_LABEL'] = 'Root Album';

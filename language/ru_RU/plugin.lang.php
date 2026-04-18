@@ -34,6 +34,7 @@ $lang['MSG_NO_TYPE'] = 'Выбран некорректный тип объек�
 $lang['MSG_SKIPPED_VIRTUAL'] = 'Пропущено виртуальное фото';
 $lang['DBG_SRC'] = 'Источник:';
 $lang['DBG_DEST'] = 'Назначение:';
+$lang['DBG_DERIVATIVES'] = 'производными:';
 $lang['DBG_PROCESSING'] = 'Обработка';
 $lang['BATCH_MENU'] = 'Переместить в физический альбом';
 $lang['ROOT_ALBUM_LABEL'] = 'корневой альбом';
