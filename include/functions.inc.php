@@ -112,6 +112,21 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
   $source_file_name = pathinfo($source_file_path)['filename'];
   $source_file_ext = pathinfo($source_file_path)['extension'];
 
+  // Get image formats
+  // AFAIK there is no dedicated oficial function for this so we need to call the DB directly :(
+  // At least the table variable is there so we only need to hardcode the column.
+  $query = '
+      SELECT ext
+      FROM ' . IMAGE_FORMAT_TABLE . '
+      WHERE image_id = ' . $image_info['id'] . '
+    ;';
+  $formats = query2array($query);
+  $source_format_names = [];
+  for ($i=0; $i<count($formats); $i++) {
+      $format_ext = $formats[$i]['ext'];
+      $source_format_names[$i] = $source_file_name . '.' . $format_ext;
+  } 
+
   // generate source derivative path, taking into account external site paths
   if (strpos($source_dir, './') === 0) {
     // path already starts with "./" so leave it alone
@@ -199,6 +214,13 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
       $dest_file_name = $source_file_name.'.'.$source_file_ext;
     }
 
+    // Create the `pwg_formats` directory for formats if it does not exist yet.
+    // Hopefully, the target directory exists by now for sure (it should, since it should be sync'd to Piwigo's DB to be selectable by PPM).
+    if (!file_exists($dest_cat_path . '/pwg_format')) {
+        // Set the permissions to rwxr-x---
+        mkdir($dest_cat_path . '/pwg_format', 0750);
+    }
+
     // build the new destination path and filename
     $dest_file_path = $dest_cat_path.'/'.$dest_file_name;
     
@@ -222,6 +244,11 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
     {
       $move_status_ok = ppm_move_file_or_folder($source_file_path, $dest_file_path);
       @ppm_chmod_path($dest_file_path);
+    }
+
+    // Move formats
+    foreach ($source_format_names as $src_fmt_name) {
+        ppm_move_file_or_folder($source_dir . '/pwg_format/' . $src_fmt_name, $dest_cat_path . '/pwg_format/' . $src_fmt_name);
     }
 
     if ($move_status_ok)
