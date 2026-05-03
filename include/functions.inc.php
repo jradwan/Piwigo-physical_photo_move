@@ -216,7 +216,7 @@ function ppm_move_photo($target_cat, $id, $ppm_test_mode)
 
     // Create the `pwg_formats` directory for formats if it does not exist yet.
     // Hopefully, the target directory exists by now for sure (it should, since it should be sync'd to Piwigo's DB to be selectable by PPM).
-    if (!file_exists($dest_cat_path . '/pwg_format')) {
+    if (!file_exists($dest_cat_path . '/pwg_format') && count($source_format_names) > 0) {
         // Set the permissions to rwxr-x---
         mkdir($dest_cat_path . '/pwg_format', 0750);
     }
